@@ -7,7 +7,7 @@
 using namespace std;
 
 
-void rotateAllImagesInFolder(string inputfolder, string outputfolder)
+void rotate_all_images_in_folder(string inputfolder, string outputfolder)
 {
 	DIR *dp;
 	struct dirent *dirp;
@@ -26,7 +26,7 @@ void rotateAllImagesInFolder(string inputfolder, string outputfolder)
 			cout << inputfolder + s << "... ";
 			cout.flush();
 			Image i(inputfolder + s);
-			i.flipHorizontally();
+			i.flip_horizontally();
 			i.save(outputfolder + s);
 			cout << "done." << endl;
 		}		
@@ -38,6 +38,6 @@ void rotateAllImagesInFolder(string inputfolder, string outputfolder)
 
 int main(int argc, char *argv[])
 {
-	rotateAllImagesInFolder("inputImages/", "outputImages/");
+	rotate_all_images_in_folder("inputImages/", "outputImages/");
 	return 0;
 }
