@@ -30,7 +30,7 @@ private:
 public:
 	Block(Image& image, const img_coord_t left, const img_coord_t top, const img_size_t height, const img_size_t width);
 	// Compare blocks with the Mean Square Error proximity measure and returns a value in [0,1].
-	float mse_proximity(const Block& rhs) const;
+	float mse_divergence(const Block& rhs) const;
 };
 
 class Image
@@ -55,5 +55,7 @@ public:
 
 	img_color_t & operator()(img_coord_t x, img_coord_t y, img_color_layer_t layer);
 };
+
+void fill_in_with_color(Image &img, const img_color_t color);
 
 #endif

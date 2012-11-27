@@ -151,12 +151,24 @@ void Image::flip_horizontally()
 			}
 }
 
+void fill_in_with_color(Image &img, const img_color_t color)
+{
+	img_size_t	height = img.get_height(),
+			width = img.get_width();
+	for(img_coord_t y =0; y < height; y++)
+		for(img_coord_t x = 0; x < width; x++)
+			for(img_color_layer_t layer =0; layer < LAYER_CNT; layer++)
+			{
+				img(x, y, layer) = color;
+			}
+}
+
 Block::Block(Image& iimage, const img_coord_t lleft, const img_coord_t ttop, const img_size_t hheight, const img_size_t wwidth)
 	: img(iimage), left(lleft), top(ttop), height(hheight), width(wwidth)
 { }
 
 // The MSE implementation.
-float Block::mse_proximity(const Block& rhs) const {
+float Block::mse_divergence(const Block& rhs) const {
 	// Determine top/bottom coordinates of blocks in images.
 	img_coord_t	lhs_t = this->top,
 			lhs_b = min(this->top+this->height, this->img.get_height()),
@@ -167,14 +179,16 @@ float Block::mse_proximity(const Block& rhs) const {
 			lhs_r = min(this->left+this->width, this->img.get_width()),
 			rhs_l = rhs.left,
 			rhs_r = min(rhs.left+rhs.width, rhs.img.get_width());
-
+	long samplesCounter = 0l;
 	float score = .0f;
-	for (; lhs_t <= lhs_b && rhs_t <= rhs_b; lhs_t++, rhs_t++)
-		for (; lhs_l <= lhs_r && rhs_l <= rhs_r; lhs_l++, rhs_l++)
+	for (; lhs_t < lhs_b && rhs_t < rhs_b; lhs_t++, rhs_t++)
+		for (; lhs_l < lhs_r && rhs_l < rhs_r; lhs_l++, rhs_l++)
 			for (int layer = FIRST; layer < LAYER_CNT; layer++) {
 				int colors_diff = ((this->img)(lhs_l, lhs_t, layer)-(rhs.img)(rhs_l, rhs_t, layer))/255.f;
 				score += colors_diff*colors_diff;
+				samplesCounter++;
 			}
+	score /= samplesCounter;
 	return score;
 }
 
