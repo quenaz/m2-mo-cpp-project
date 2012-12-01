@@ -163,8 +163,8 @@ void fill_in_with_color(Image &img, const img_color_t color)
 			}
 }
 
-Block::Block(const Image* iimage, const img_coord_t lleft, const img_coord_t ttop, const img_size_t hheight, const img_size_t wwidth)
-	: img(iimage), left(lleft), top(ttop), height(hheight), width(wwidth)
+Block::Block(const Image* iimage, const img_coord_t ttop, const img_coord_t lleft, const img_size_t hheight, const img_size_t wwidth)
+	: img(iimage), top(ttop), left(lleft), height(hheight), width(wwidth)
 { }
 
 // The MSE implementation.
@@ -201,6 +201,20 @@ Image::iterator Image::end(const img_size_t height, const img_size_t width)
 {
 	iterator it = iterator(this, height, width);
 	return it.end();
+}
+
+Image& Image::scale_to(const img_size_t height, const img_size_t width) const
+{
+	Image downscaled(height, width);
+
+	// TODO: Implement real downscaling. This is just copying of a part of an image.
+	for(img_coord_t y =0; y < height; y++)
+		for(img_coord_t x = 0; x < width; x++)
+			for(img_color_layer_t layer =0; layer < LAYER_CNT; layer++)
+			{
+				downscaled(x, y, layer) = this(x, y, layer);
+			}
+	return downscaled;
 }
 
 BlockIterator::BlockIterator(Image* iimage, const img_size_t hheight, const img_size_t wwidth)
@@ -257,7 +271,7 @@ BlockIterator& BlockIterator::operator++() // prefix
 	}
 	if (!is_at_the_end)
 	{
-		cur_block = Block(img, cur_width_offset, cur_height_offset, block_height, block_width);
+		cur_block = Block(img, cur_height_offset, cur_width_offset, block_height, block_width);
 	}	
 	else
 	{
