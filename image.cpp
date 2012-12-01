@@ -203,16 +203,14 @@ Image::iterator Image::end(const img_size_t height, const img_size_t width)
 	return it.end();
 }
 
-Image& Image::scale_to(const img_size_t height, const img_size_t width) const
+Image& Image::scale_to(Image& downscaled) const
 {
-	Image downscaled(height, width);
-
 	// TODO: Implement real downscaling. This is just copying of a part of an image.
 	for(img_coord_t y =0; y < height; y++)
 		for(img_coord_t x = 0; x < width; x++)
 			for(img_color_layer_t layer =0; layer < LAYER_CNT; layer++)
 			{
-				downscaled(x, y, layer) = this(x, y, layer);
+				downscaled(x, y, layer) = (*this)(x, y, layer);
 			}
 	return downscaled;
 }

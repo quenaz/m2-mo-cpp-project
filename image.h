@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <cstdio>
+#include <vector>
 
 using namespace std;
 
@@ -82,9 +83,22 @@ public:
 	void flip_horizontally();
 
 	img_color_t& operator()(img_coord_t x, img_coord_t y, img_color_layer_t layer) const;
-	Image& scale_to(const img_size_t height, const img_size_t width) const; 
+	Image& scale_to(Image& downscaled) const; 
 };
 
 void fill_in_with_color(Image &img, const img_color_t color);
+
+class ImageLibrary
+{
+public:
+	typedef vector<Image*> storage;
+private:
+	storage images;
+public:
+	// Reload images from the folder "libraryImages".
+	void reload();
+	storage::const_iterator begin();
+	storage::const_iterator end();
+};
 
 #endif
