@@ -34,12 +34,12 @@ Image::Image(Image &img)
 		this->data[i] = img.data[i];
 }
 
-int Image::get_width()
+int Image::get_width() const
 {
 	return width;
 }
 
-int Image::get_height()
+int Image::get_height() const
 {
 	return height;
 }
@@ -134,7 +134,7 @@ void Image::save(string filename)
 	fclose(outfile);
 }
 
-img_color_t & Image::operator()(img_coord_t x, img_coord_t y, img_color_layer_t layer)
+img_color_t& Image::operator()(img_coord_t x, img_coord_t y, img_color_layer_t layer) const
 {
 	return data[y*LAYER_CNT*width + x*LAYER_CNT + layer];
 }
@@ -163,7 +163,7 @@ void fill_in_with_color(Image &img, const img_color_t color)
 			}
 }
 
-Block::Block(Image& iimage, const img_coord_t lleft, const img_coord_t ttop, const img_size_t hheight, const img_size_t wwidth)
+Block::Block(const Image* iimage, const img_coord_t lleft, const img_coord_t ttop, const img_size_t hheight, const img_size_t wwidth)
 	: img(iimage), left(lleft), top(ttop), height(hheight), width(wwidth)
 { }
 
@@ -171,24 +171,133 @@ Block::Block(Image& iimage, const img_coord_t lleft, const img_coord_t ttop, con
 float Block::mse_divergence(const Block& rhs) const {
 	// Determine top/bottom coordinates of blocks in images.
 	img_coord_t	lhs_t = this->top,
-			lhs_b = min(this->top+this->height, this->img.get_height()),
+			lhs_b = min(this->top+this->height, this->img->get_height()),
 			rhs_t = rhs.top,
-			rhs_b = min(rhs.top+rhs.height, rhs.img.get_height());
+			rhs_b = min(rhs.top+rhs.height, rhs.img->get_height());
 	// Determine left/right coordinates of blocks in images.
 	img_coord_t	lhs_l = this->left,
-			lhs_r = min(this->left+this->width, this->img.get_width()),
+			lhs_r = min(this->left+this->width, this->img->get_width()),
 			rhs_l = rhs.left,
-			rhs_r = min(rhs.left+rhs.width, rhs.img.get_width());
+			rhs_r = min(rhs.left+rhs.width, rhs.img->get_width());
 	long samplesCounter = 0l;
 	float score = .0f;
 	for (; lhs_t < lhs_b && rhs_t < rhs_b; lhs_t++, rhs_t++)
 		for (; lhs_l < lhs_r && rhs_l < rhs_r; lhs_l++, rhs_l++)
 			for (int layer = FIRST; layer < LAYER_CNT; layer++) {
-				int colors_diff = ((this->img)(lhs_l, lhs_t, layer)-(rhs.img)(rhs_l, rhs_t, layer))/255.f;
+				int colors_diff = ((*(this->img))(lhs_l, lhs_t, layer)-(*(rhs.img))(rhs_l, rhs_t, layer))/255.f;
 				score += colors_diff*colors_diff;
 				samplesCounter++;
 			}
 	score /= samplesCounter;
 	return score;
+}
+
+Image::iterator Image::begin(const img_size_t height, const img_size_t width)
+{
+	return iterator(this, height, width);
+}
+
+Image::iterator Image::end(const img_size_t height, const img_size_t width)
+{
+	iterator it = iterator(this, height, width);
+	return it.end();
+}
+
+BlockIterator::BlockIterator(Image* iimage, const img_size_t hheight, const img_size_t wwidth)
+	: img(iimage)
+	, block_height(hheight)
+	, block_width(wwidth)
+	, cur_height_offset(0)
+	, cur_width_offset(0)
+	, is_at_the_end(false)
+	, cur_block(Block(iimage, 0, 0, hheight, wwidth))
+	, end_block(Block(NULL, -1, -1, -1, -1 ))
+{ }
+
+BlockIterator& BlockIterator::end()
+{
+	cur_block = end_block;
+	is_at_the_end = true;
+	return *this;
+}
+
+Block& BlockIterator::operator*()
+{
+	if (is_at_the_end) throw reached_end();
+
+	return cur_block;
+}
+
+Block* BlockIterator::operator->()
+{
+	if (is_at_the_end) throw reached_end();
+
+	return &cur_block;
+}
+
+BlockIterator& BlockIterator::operator++() // prefix
+{
+	if (is_at_the_end) throw reached_end();
+
+	if (cur_width_offset + block_width < img->get_width()) // can shift window one right
+	{
+		cur_width_offset += block_width;
+	}
+	else
+	{
+		cur_width_offset = 0;
+		if (cur_height_offset + block_height < img->get_height()) // can shift window one bottom
+		{
+			cur_height_offset += block_height;
+		}
+		else // reached the end
+		{
+			is_at_the_end = true;
+		}
+	}
+	if (!is_at_the_end)
+	{
+		cur_block = Block(img, cur_width_offset, cur_height_offset, block_height, block_width);
+	}	
+	else
+	{
+		cur_block = end_block;
+	}	
+	return *this;
+}
+
+bool BlockIterator::operator==(const BlockIterator& rhs) const
+{
+	if (is_at_the_end == true && rhs.is_at_the_end == true)
+	{
+		return true;
+	}
+	return	(
+			img == rhs.img &&
+			block_height == rhs.block_height &&
+			block_width == rhs.block_width &&
+			cur_height_offset == rhs.cur_height_offset &&
+			cur_width_offset == rhs.cur_width_offset &&
+			is_at_the_end == rhs.is_at_the_end
+		);
+}
+
+bool BlockIterator::operator!=(const BlockIterator& rhs) const
+{
+	if ((is_at_the_end || rhs.is_at_the_end) && (is_at_the_end != rhs.is_at_the_end))
+	{
+		return true;
+	}
+	if (is_at_the_end && rhs.is_at_the_end)
+	{
+		return false;
+	}
+	return	!(
+			img == rhs.img &&
+			block_height == rhs.block_height &&
+			block_width == rhs.block_width &&
+			cur_height_offset == rhs.cur_height_offset &&
+			cur_width_offset == rhs.cur_width_offset
+		);
 }
 

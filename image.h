@@ -22,15 +22,38 @@ class Image;
 class Block
 {
 private:
-	Image&		img;
+	const Image*	img;
 	img_coord_t	left;
 	img_coord_t	top;
 	img_size_t	height;
 	img_size_t	width;
 public:
-	Block(Image& image, const img_coord_t left, const img_coord_t top, const img_size_t height, const img_size_t width);
+	Block(const Image* image, const img_coord_t left, const img_coord_t top, const img_size_t height, const img_size_t width);
 	// Compare blocks with the Mean Square Error proximity measure and returns a value in [0,1].
 	float mse_divergence(const Block& rhs) const;
+};
+
+class reached_end {};
+
+class BlockIterator
+{
+private:
+	Image* img;
+	img_size_t block_height;
+	img_size_t block_width;
+	img_size_t cur_height_offset;
+	img_size_t cur_width_offset;
+	bool is_at_the_end;
+	Block cur_block;
+	Block end_block;
+public:
+	BlockIterator(Image* image, const img_size_t block_height, const img_size_t block_width);
+	BlockIterator& end();
+	Block& operator*();
+	Block* operator->();
+	BlockIterator& operator++();
+	bool operator==(const BlockIterator&) const;
+	bool operator!=(const BlockIterator&) const;
 };
 
 class Image
@@ -42,18 +65,23 @@ private:
 
 	void load(string filename);
 public: 
+	typedef BlockIterator iterator;
+
 	Image(string filename);
 	Image(img_size_t width, img_size_t height);
 	Image(Image &img);
 	~Image();
-	img_size_t get_width();
-	img_size_t get_height();
+	img_size_t get_width() const;
+	img_size_t get_height() const;
+
+	iterator begin(const img_size_t height, const img_size_t width);
+	iterator end(const img_size_t height, const img_size_t width);
 
 	void save(string filename);
 
 	void flip_horizontally();
 
-	img_color_t & operator()(img_coord_t x, img_coord_t y, img_color_layer_t layer);
+	img_color_t& operator()(img_coord_t x, img_coord_t y, img_color_layer_t layer) const;
 };
 
 void fill_in_with_color(Image &img, const img_color_t color);
