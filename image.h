@@ -97,7 +97,7 @@ class DirectoryListingIterator
 	friend class DirectoryListing;
 	DIR *open_dir;
 	struct dirent *cur_file;
-	string cur_file_path;
+	string cur_file_name;
 	string folder;
 	static DirectoryListingIterator it_to_end;
 public:

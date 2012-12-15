@@ -36,14 +36,15 @@ DirectoryListingIterator::DirectoryListingIterator(string& dir) throw (exception
 	folder = dir;
 	if (NULL == (open_dir = opendir(folder.c_str())))
 		throw exception();
+	cur_file = readdir(open_dir);
 }
 
 string& DirectoryListingIterator::operator*()
 {
 	if (NULL == cur_file)
 		throw exception();
-	cur_file_path = folder+string(cur_file->d_name, cur_file->d_namlen);
-	return cur_file_path;
+	cur_file_name = string(cur_file->d_name, cur_file->d_namlen);
+	return cur_file_name;
 }
 
 DirectoryListingIterator& DirectoryListingIterator::operator++()
