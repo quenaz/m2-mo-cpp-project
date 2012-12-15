@@ -9,6 +9,8 @@
 #include <cstdio>
 #include <vector>
 
+#include <dirent.h>
+
 using namespace std;
 
 enum {RED = 0, GREEN, BLUE, FIRST = RED, LAST = BLUE, LAYER_CNT = 3}; 
@@ -87,6 +89,38 @@ public:
 };
 
 void fill_in_with_color(Image &img, const img_color_t color);
+
+class DirectoryListing;
+
+class DirectoryListingIterator
+{
+	friend class DirectoryListing;
+	DIR *open_dir;
+	struct dirent *cur_file;
+	string cur_file_path;
+	string folder;
+	static DirectoryListingIterator it_to_end;
+public:
+	string& operator*();
+	DirectoryListingIterator& operator++();
+	bool operator==(const DirectoryListingIterator&) const;
+	bool operator!=(const DirectoryListingIterator&) const;
+private:
+	DirectoryListingIterator(string& dir) throw (exception);
+	DirectoryListingIterator() : open_dir(NULL), cur_file(NULL) {}
+};
+
+class DirectoryListing
+{
+public:
+	typedef DirectoryListingIterator iterator;
+private:
+	string folder;
+public:
+	DirectoryListing(string& dir);
+	iterator begin();
+	iterator end();
+};
 
 class ImageLibrary
 {

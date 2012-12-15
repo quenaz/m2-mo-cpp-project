@@ -80,3 +80,20 @@ BOOST_AUTO_TEST_CASE(check_block_iterator_for_consistency_when_partial_blocks_pr
 
 }
 
+BOOST_AUTO_TEST_CASE(directory_listing_iterator_must_list_files_in_current_working_directory)
+{
+	string				list_dir = string(".");
+	DirectoryListing		dir_listing(list_dir);
+	DirectoryListing::iterator	begin = dir_listing.begin(),
+					end = dir_listing.end();
+	BOOST_REQUIRE_EQUAL(begin == end, false);
+	BOOST_REQUIRE_EQUAL(begin != end, true);
+	
+	int cnt = 0;
+	for (DirectoryListing::iterator it = begin; it != end; ++it)
+	{
+		cnt++;
+	}
+	BOOST_REQUIRE(cnt > 0);
+}
+
