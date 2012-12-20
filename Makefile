@@ -1,9 +1,11 @@
 CC = g++
 ARCH = 
 LIBS = -ljpeg
+# Boost MUST be installed in order to use tests.
 LIBS_TEST = -lboost_unit_test_framework-mt
-LIBS_PATH = -L/opt/local/lib
-INCLUDE_PATH = -I/opt/local/include/
+# Both current directory and Port library directories supported.
+LIBS_PATH = -L. -L/opt/local/lib
+INCLUDE_PATH = -I. -I/opt/local/include/
 
 GOAL = m2mo_brummer_oboturov_project
 TEST_SUITE = tests
