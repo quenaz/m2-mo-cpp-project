@@ -13,10 +13,10 @@ TEST_SUITE = tests
 all: $(GOAL)
 
 $(GOAL): image.o directory_listing.o  main.o
-	$(CC) $(LIBS_PATH) $(LIBS) -Wall image.o directory_listing.o main.o -o $(GOAL)
+	$(CC) image.o directory_listing.o main.o -o $(GOAL) $(LIBS_PATH) $(LIBS) -Wall
 
 test: image.o directory_listing.o image_test.o
-	$(CC) $(LIBS_PATH) $(LIBS) $(LIBS_TEST) -Wall image.o directory_listing.o image_test.o -o $(TEST_SUITE)
+	$(CC) image.o directory_listing.o image_test.o -o $(TEST_SUITE) $(LIBS_PATH) $(LIBS) $(LIBS_TEST) -Wall 
 
 main.o: main.cpp
 	$(CC) $(INCLUDE_PATH) $(LIBS_PATH) -c -g main.cpp
