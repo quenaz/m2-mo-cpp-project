@@ -313,3 +313,52 @@ bool BlockIterator::operator!=(const BlockIterator& rhs) const
 		);
 }
 
+void ImageLibrary::reload(string inputfolder)
+{
+DIR *dp;
+	struct dirent *dirp;
+
+	if((dp  = opendir(inputfolder.c_str())) == NULL) 
+	{
+	        cout << "Error opening " << inputfolder << endl;
+        	return;
+	}
+
+	while ((dirp = readdir(dp)) != NULL) 
+	{
+		string s(dirp->d_name);
+		if(s.length() > 4)
+		{
+			cout <<"Loading " << inputfolder + s << " to library... ";
+			cout.flush();
+			Image* i = new Image(inputfolder + s);
+			images.push_back(i);
+			cout << "done." << endl;
+		}		
+	}
+
+	closedir(dp);
+
+}
+
+int ImageLibrary::size()
+{
+	return images.size();
+}
+
+ImageLibrary::storage::const_iterator ImageLibrary::begin()
+{
+	return images.begin();
+}
+ImageLibrary::storage::const_iterator ImageLibrary::end()
+{
+	return images.end();
+} 
+
+ImageLibrary::~ImageLibrary()
+{
+	for (ImageLibrary::storage::const_iterator constIt = begin(); constIt != end(); ++constIt)
+	{
+		(*constIt)->~Image();
+	}
+}

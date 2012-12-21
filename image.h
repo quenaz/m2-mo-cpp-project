@@ -129,10 +129,11 @@ public:
 private:
 	storage images;
 public:
-	// Reload images from the folder "libraryImages".
-	void reload();
+	// Reload images from the folder "libraryImages"
+	void reload(string inputfolder);
 	storage::const_iterator begin();
 	storage::const_iterator end();
+	int size();
+	~ImageLibrary();
 };
-
 #endif
