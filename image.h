@@ -22,6 +22,27 @@ typedef int img_size_t;
 
 class Image;
 
+class Block;
+
+class DivergenceMeasure
+{
+public:
+	virtual float compute(const Block& lhs, const Block& rhs) const = 0;
+	virtual ~DivergenceMeasure() = 0;
+};
+
+class MseDivergence : public DivergenceMeasure
+{
+	float compute(const Block& lhs, const Block& rhs) const;
+	~MseDivergence() {};
+};
+
+class MeanColor : public DivergenceMeasure
+{
+	float compute(const Block& lhs, const Block& rhs) const;
+	~MeanColor() {};
+};
+
 class Block
 {
 private:
@@ -33,7 +54,12 @@ private:
 public:
 	Block(const Image* image, const img_coord_t top, const img_coord_t left, const img_size_t height, const img_size_t width);
 	// Compare blocks with the Mean Square Error proximity measure and returns a value in [0,1].
-	float mse_divergence(const Block& rhs) const;
+	float divergence_value(const DivergenceMeasure* measure, const Block& rhs) const;
+	img_coord_t get_left() const { return left; }
+        img_coord_t get_top() const { return top; }
+        img_size_t get_height() const { return height; }
+        img_size_t get_width() const { return width; }
+	const Image* get_img() const { return img; }
 };
 
 class reached_end {};

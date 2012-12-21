@@ -1,8 +1,10 @@
 #include "image.h"
 
 #include <jpeglib.h>
+
 #include <cstdlib>
 #include <algorithm>
+#include <cstring>
 
 using namespace std;
 
@@ -163,33 +165,71 @@ void fill_in_with_color(Image &img, const img_color_t color)
 			}
 }
 
+inline DivergenceMeasure::~DivergenceMeasure() {};
+
+float MseDivergence::compute(const Block& lhs, const Block& rhs) const
+{
+        // Determine top/bottom coordinates of blocks in images.
+        img_coord_t     lhs_t = lhs.get_top(),
+                        lhs_b = min(lhs.get_top()+lhs.get_height(), lhs.get_img()->get_height()),
+                        rhs_t = rhs.get_top(),
+                        rhs_b = min(rhs.get_top()+rhs.get_height(), rhs.get_img()->get_height());
+        // Determine left/right coordinates of blocks in images.
+        img_coord_t     lhs_l = lhs.get_left(),
+                        lhs_r = min(lhs.get_left()+lhs.get_width(), lhs.get_img()->get_width()),
+                        rhs_l = rhs.get_left(),
+                        rhs_r = min(rhs.get_left()+rhs.get_width(), rhs.get_img()->get_width());
+        long samplesCounter = 0l;
+        float score = .0f;
+        for (; lhs_t < lhs_b && rhs_t < rhs_b; lhs_t++, rhs_t++)
+                for (; lhs_l < lhs_r && rhs_l < rhs_r; lhs_l++, rhs_l++)
+                        for (int layer = FIRST; layer < LAYER_CNT; layer++) {
+                                int colors_diff = ((*(lhs.get_img()))(lhs_l, lhs_t, layer)-(*(rhs.get_img()))(rhs_l, rhs_t, layer))/255.f;
+                                score += colors_diff*colors_diff;
+                                samplesCounter++;
+                        }
+        score /= samplesCounter;
+        return 1.f - score;
+}
+
+float MeanColor::compute(const Block& lhs, const Block& rhs) const
+{
+        // Determine top/bottom coordinates of blocks in images.
+        img_coord_t     lhs_t = lhs.get_top(),
+                        lhs_b = min(lhs.get_top()+lhs.get_height(), lhs.get_img()->get_height()),
+                        rhs_t = rhs.get_top(),
+                        rhs_b = min(rhs.get_top()+rhs.get_height(), rhs.get_img()->get_height());
+        // Determine left/right coordinates of blocks in images.
+        img_coord_t     lhs_l = lhs.get_left(),
+                        lhs_r = min(lhs.get_left()+lhs.get_width(), lhs.get_img()->get_width()),
+                        rhs_l = rhs.get_left(),
+                        rhs_r = min(rhs.get_left()+rhs.get_width(), rhs.get_img()->get_width());
+        long samplesCounter = 0l;
+	long meanColors[2][LAYER_CNT];
+	memset(meanColors, 0, sizeof(long) * 2 * LAYER_CNT);
+        for (; lhs_t < lhs_b && rhs_t < rhs_b; lhs_t++, rhs_t++)
+                for (; lhs_l < lhs_r && rhs_l < rhs_r; lhs_l++, rhs_l++)
+                        for (int layer = FIRST; layer < LAYER_CNT; layer++) {
+				meanColors[0][layer] += (*(lhs.get_img()))(lhs_l, lhs_t, layer);
+				meanColors[1][layer] += (*(rhs.get_img()))(rhs_l, rhs_t, layer);
+				samplesCounter++;
+                        }
+	float score = 1.f, tmp_score;
+	for (int layer = FIRST; layer < LAYER_CNT; layer++) {
+		tmp_score = meanColors[0][layer]/samplesCounter/255.f;
+		if (tmp_score < score) score = tmp_score;
+		tmp_score = meanColors[1][layer]/samplesCounter/255.f;
+		if (tmp_score < score) score = tmp_score;
+	}
+	return score;
+}
+
 Block::Block(const Image* iimage, const img_coord_t ttop, const img_coord_t lleft, const img_size_t hheight, const img_size_t wwidth)
 	: img(iimage), top(ttop), left(lleft), height(hheight), width(wwidth)
 { }
 
-// The MSE implementation.
-float Block::mse_divergence(const Block& rhs) const {
-	// Determine top/bottom coordinates of blocks in images.
-	img_coord_t	lhs_t = this->top,
-			lhs_b = min(this->top+this->height, this->img->get_height()),
-			rhs_t = rhs.top,
-			rhs_b = min(rhs.top+rhs.height, rhs.img->get_height());
-	// Determine left/right coordinates of blocks in images.
-	img_coord_t	lhs_l = this->left,
-			lhs_r = min(this->left+this->width, this->img->get_width()),
-			rhs_l = rhs.left,
-			rhs_r = min(rhs.left+rhs.width, rhs.img->get_width());
-	long samplesCounter = 0l;
-	float score = .0f;
-	for (; lhs_t < lhs_b && rhs_t < rhs_b; lhs_t++, rhs_t++)
-		for (; lhs_l < lhs_r && rhs_l < rhs_r; lhs_l++, rhs_l++)
-			for (int layer = FIRST; layer < LAYER_CNT; layer++) {
-				int colors_diff = ((*(this->img))(lhs_l, lhs_t, layer)-(*(rhs.img))(rhs_l, rhs_t, layer))/255.f;
-				score += colors_diff*colors_diff;
-				samplesCounter++;
-			}
-	score /= samplesCounter;
-	return score;
+float Block::divergence_value(const DivergenceMeasure* measure, const Block& rhs) const {
+	return measure->compute(*this, rhs);
 }
 
 Image::iterator Image::begin(const img_size_t height, const img_size_t width)
