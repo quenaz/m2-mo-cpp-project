@@ -205,13 +205,32 @@ Image::iterator Image::end(const img_size_t height, const img_size_t width)
 
 Image& Image::scale_to(Image& downscaled) const
 {
-	// TODO: Implement real downscaling. This is just copying of a part of an image.
-	for(img_coord_t y =0; y < height; y++)
-		for(img_coord_t x = 0; x < width; x++)
-			for(img_color_layer_t layer =0; layer < LAYER_CNT; layer++)
+	img_size_t	desiredw = downscaled.get_width(),
+				desiredh = downscaled.get_height();
+
+	float paceh = height/desiredh;
+	float pacew = width/desiredw;
+	float norm = paceh*pacew;
+	int y = 0;// pixel positions for big image
+	int x = 0;
+	for(int i = 0; i < desiredw; i++)
+	{
+		x=i*pacew;
+		for(int j = 0; j < desiredh; j++)
+		{
+		y = j*paceh;
+			for(img_color_layer_t layer = 0; layer < LAYER_CNT; layer++)
 			{
-				downscaled(x, y, layer) = (*this)(x, y, layer);
+				float color = 0;
+				for (int cnth = 0; cnth < int(paceh); cnth++)
+				{
+					for (int cntw = 0; cntw < int(pacew); cntw++)
+						color += (float)(*this)(x + cntw, y + cnth, layer);
+				}
+				downscaled(i, j, layer) = color/norm;
 			}
+		}	
+	}
 	return downscaled;
 }
 
