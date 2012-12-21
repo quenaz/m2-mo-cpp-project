@@ -27,18 +27,21 @@ class Block;
 class DivergenceMeasure
 {
 public:
+	// Compare blocks with the Mean Square Error proximity measure and returns a value in [0,1].
 	virtual float compute(const Block& lhs, const Block& rhs) const = 0;
 	virtual ~DivergenceMeasure() = 0;
 };
 
 class MseDivergence : public DivergenceMeasure
 {
+public:
 	float compute(const Block& lhs, const Block& rhs) const;
 	~MseDivergence() {};
 };
 
 class MeanColor : public DivergenceMeasure
 {
+public:
 	float compute(const Block& lhs, const Block& rhs) const;
 	~MeanColor() {};
 };
@@ -53,13 +56,12 @@ private:
 	img_size_t	width;
 public:
 	Block(const Image* image, const img_coord_t top, const img_coord_t left, const img_size_t height, const img_size_t width);
-	// Compare blocks with the Mean Square Error proximity measure and returns a value in [0,1].
-	float divergence_value(const DivergenceMeasure* measure, const Block& rhs) const;
 	img_coord_t get_left() const { return left; }
-        img_coord_t get_top() const { return top; }
-        img_size_t get_height() const { return height; }
-        img_size_t get_width() const { return width; }
+	img_coord_t get_top() const { return top; }
+	img_size_t get_height() const { return height; }
+	img_size_t get_width() const { return width; }
 	const Image* get_img() const { return img; }
+	void copy_content(Block& to_copy);
 };
 
 class reached_end {};

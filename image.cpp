@@ -170,21 +170,21 @@ inline DivergenceMeasure::~DivergenceMeasure() {};
 float MseDivergence::compute(const Block& lhs, const Block& rhs) const
 {
         // Determine top/bottom coordinates of blocks in images.
-        img_coord_t     lhs_t = lhs.get_top(),
+        const img_coord_t     lhs_t = lhs.get_top(),
                         lhs_b = min(lhs.get_top()+lhs.get_height(), lhs.get_img()->get_height()),
                         rhs_t = rhs.get_top(),
                         rhs_b = min(rhs.get_top()+rhs.get_height(), rhs.get_img()->get_height());
         // Determine left/right coordinates of blocks in images.
-        img_coord_t     lhs_l = lhs.get_left(),
+        const img_coord_t     lhs_l = lhs.get_left(),
                         lhs_r = min(lhs.get_left()+lhs.get_width(), lhs.get_img()->get_width()),
                         rhs_l = rhs.get_left(),
                         rhs_r = min(rhs.get_left()+rhs.get_width(), rhs.get_img()->get_width());
         long samplesCounter = 0l;
         float score = .0f;
-        for (; lhs_t < lhs_b && rhs_t < rhs_b; lhs_t++, rhs_t++)
-                for (; lhs_l < lhs_r && rhs_l < rhs_r; lhs_l++, rhs_l++)
+		for (img_coord_t lt = lhs_t, rt = rhs_t; lt < lhs_b && rt < rhs_b; lt++, rt++)
+            for (img_coord_t ll = lhs_l, rl = rhs_l; ll < lhs_r && rl < rhs_r; ll++, rl++)
                         for (int layer = FIRST; layer < LAYER_CNT; layer++) {
-                                int colors_diff = ((*(lhs.get_img()))(lhs_l, lhs_t, layer)-(*(rhs.get_img()))(rhs_l, rhs_t, layer))/255.f;
+                                int colors_diff = ((*(lhs.get_img()))(ll, lt, layer)-(*(rhs.get_img()))(rl, rt, layer))/255.f;
                                 score += colors_diff*colors_diff;
                                 samplesCounter++;
                         }
@@ -195,23 +195,23 @@ float MseDivergence::compute(const Block& lhs, const Block& rhs) const
 float MeanColor::compute(const Block& lhs, const Block& rhs) const
 {
         // Determine top/bottom coordinates of blocks in images.
-        img_coord_t     lhs_t = lhs.get_top(),
+        const img_coord_t     lhs_t = lhs.get_top(),
                         lhs_b = min(lhs.get_top()+lhs.get_height(), lhs.get_img()->get_height()),
                         rhs_t = rhs.get_top(),
                         rhs_b = min(rhs.get_top()+rhs.get_height(), rhs.get_img()->get_height());
         // Determine left/right coordinates of blocks in images.
-        img_coord_t     lhs_l = lhs.get_left(),
+        const img_coord_t     lhs_l = lhs.get_left(),
                         lhs_r = min(lhs.get_left()+lhs.get_width(), lhs.get_img()->get_width()),
                         rhs_l = rhs.get_left(),
                         rhs_r = min(rhs.get_left()+rhs.get_width(), rhs.get_img()->get_width());
         long samplesCounter = 0l;
 	long meanColors[2][LAYER_CNT];
 	memset(meanColors, 0, sizeof(long) * 2 * LAYER_CNT);
-        for (; lhs_t < lhs_b && rhs_t < rhs_b; lhs_t++, rhs_t++)
-                for (; lhs_l < lhs_r && rhs_l < rhs_r; lhs_l++, rhs_l++)
-                        for (int layer = FIRST; layer < LAYER_CNT; layer++) {
-				meanColors[0][layer] += (*(lhs.get_img()))(lhs_l, lhs_t, layer);
-				meanColors[1][layer] += (*(rhs.get_img()))(rhs_l, rhs_t, layer);
+		for (img_coord_t lt = lhs_t, rt = rhs_t; lt < lhs_b && rt < rhs_b; lt++, rt++)
+            for (img_coord_t ll = lhs_l, rl = rhs_l; ll < lhs_r && rl < rhs_r; ll++, rl++)
+                for (int layer = FIRST; layer < LAYER_CNT; layer++) {
+				meanColors[0][layer] += (*(lhs.get_img()))(ll, lt, layer);
+				meanColors[1][layer] += (*(rhs.get_img()))(rl, rt, layer);
 				samplesCounter++;
                         }
 	float score = 1.f, tmp_score;
@@ -228,8 +228,25 @@ Block::Block(const Image* iimage, const img_coord_t ttop, const img_coord_t llef
 	: img(iimage), top(ttop), left(lleft), height(hheight), width(wwidth)
 { }
 
-float Block::divergence_value(const DivergenceMeasure* measure, const Block& rhs) const {
-	return measure->compute(*this, rhs);
+
+void Block::copy_content(Block& to_copy)
+{
+	Block& lhs = *this, rhs = to_copy;
+       // Determine top/bottom coordinates of blocks in images.
+        const img_coord_t     lhs_t = lhs.get_top(),
+                        lhs_b = min(lhs.get_top()+lhs.get_height(), lhs.get_img()->get_height()),
+                        rhs_t = rhs.get_top(),
+                        rhs_b = min(rhs.get_top()+rhs.get_height(), rhs.get_img()->get_height());
+		// Determine left/right coordinates of blocks in images.
+        const img_coord_t     lhs_l = lhs.get_left(),
+                        lhs_r = min(lhs.get_left()+lhs.get_width(), lhs.get_img()->get_width()),
+                        rhs_l = rhs.get_left(),
+                        rhs_r = min(rhs.get_left()+rhs.get_width(), rhs.get_img()->get_width());
+		for (img_coord_t lt = lhs_t, rt = rhs_t; lt < lhs_b && rt < rhs_b; lt++, rt++)
+                for (img_coord_t ll = lhs_l, rl = rhs_l; ll < lhs_r && rl < rhs_r; ll++, rl++)
+                        for (int layer = FIRST; layer < LAYER_CNT; layer++) {
+							(*lhs.get_img())(ll, lt, layer) = (*(rhs.get_img()))(rl, rt, layer);
+                        }
 }
 
 Image::iterator Image::begin(const img_size_t height, const img_size_t width)
