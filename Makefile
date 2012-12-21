@@ -18,6 +18,9 @@ $(GOAL): image.o directory_listing.o  main.o
 library_generator: image.o directory_listing.o library_generator.o
 	$(CC) image.o directory_listing.o library_generator.o -o library_generator $(LIBS_PATH) $(LIBS) -Wall
 
+rotation_example: image.o directory_listing.o rotation_example.o
+	$(CC) image.o directory_listing.o rotation_example.o -o rotation_example $(LIBS_PATH) $(LIBS) -Wall
+
 test: image.o directory_listing.o image_test.o
 	$(CC) image.o directory_listing.o image_test.o -o $(TEST_SUITE) $(LIBS_PATH) $(LIBS) $(LIBS_TEST) -Wall 
 
@@ -32,6 +35,9 @@ directory_listing.o: directory_listing.cpp
 
 library_generator.o: library_generator.cpp
 	$(CC) $(INCLUDE_PATH) $(LIBS_PATH) -c -g library_generator.cpp 
+
+rotation_example.o: rotation_example.cpp
+	$(CC) $(INCLUDE_PATH) $(LIBS_PATH) -c -g rotation_example.cpp
 
 image_test.o: image_test.cpp
 	$(CC) $(INCLUDE_PATH) $(LIBS_PATH) -c -g image_test.cpp

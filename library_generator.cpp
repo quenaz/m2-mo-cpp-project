@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void rotate_all_images_in_folder(int counter_start, string input_folder, string output_folder)
+void rescale_all_library_images_in_folder(int counter_start, string input_folder, string output_folder)
 {
 	DirectoryListing		dir_listing(input_folder);
 	DirectoryListing::iterator	begin = dir_listing.begin(),
@@ -16,9 +16,9 @@ void rotate_all_images_in_folder(int counter_start, string input_folder, string 
 	const int BUF_LN = 20;
 	const int BLOCK_SZ = 100;
 	char buffer[BUF_LN];
-	for (DirectoryListing::iterator it = begin; it != end;)
+	for (DirectoryListing::iterator it = begin; it != end; ++it)
 	{
-		string s = *(++it);
+		string s = *it;
                 if(s.length() > 4)
                 {
                         cout << input_folder + s << "... ";
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 {
 	try {
 		int counter_start = atoi(argv[1]);
-		rotate_all_images_in_folder(counter_start, "inputImages/", "outputImages/");
+		rescale_all_library_images_in_folder(counter_start, "inputImages/", "outputImages/");
 	} catch (exception) {
 	        cout << "Error opening inputImages/" << endl;
 	}
