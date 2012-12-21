@@ -29,7 +29,7 @@ DirectoryListing::iterator DirectoryListing::end()
 
 // Define DirectoryListingIterator class.
 
-DirectoryListingIterator DirectoryListingIterator::it_to_end = DirectoryListingIterator::DirectoryListingIterator();
+DirectoryListingIterator DirectoryListingIterator::it_to_end = DirectoryListingIterator();
 
 DirectoryListingIterator::DirectoryListingIterator(string& dir) throw (exception)
 {
@@ -43,7 +43,7 @@ string& DirectoryListingIterator::operator*()
 {
 	if (NULL == cur_file)
 		throw exception();
-	cur_file_name = string(cur_file->d_name, cur_file->d_namlen);
+	cur_file_name = string(cur_file->d_name);
 	return cur_file_name;
 }
 
