@@ -46,6 +46,13 @@ public:
 	~MeanColor() {};
 };
 
+class MCmse : public DivergenceMeasure
+{
+public:
+	float compute(const Block& lhs, const Block& rhs) const;
+	~MCmse() {};
+};
+
 class Block
 {
 private:

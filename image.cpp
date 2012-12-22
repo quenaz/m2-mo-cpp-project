@@ -224,6 +224,34 @@ float MeanColor::compute(const Block& lhs, const Block& rhs) const
 	return score;
 }
 
+float MCmse::compute(const Block& lhs, const Block& rhs) const
+{
+        // Determine top/bottom coordinates of blocks in images.
+        const img_coord_t     lhs_t = lhs.get_top(),
+                        lhs_b = min(lhs.get_top()+lhs.get_height(), lhs.get_img()->get_height()),
+                        rhs_t = rhs.get_top(),
+                        rhs_b = min(rhs.get_top()+rhs.get_height(), rhs.get_img()->get_height());
+        // Determine left/right coordinates of blocks in images.
+        const img_coord_t     lhs_l = lhs.get_left(),
+                        lhs_r = min(lhs.get_left()+lhs.get_width(), lhs.get_img()->get_width()),
+                        rhs_l = rhs.get_left(),
+                        rhs_r = min(rhs.get_left()+rhs.get_width(), rhs.get_img()->get_width());
+        long samplesCounter=0;
+	float sum=0;
+		for (img_coord_t lt = lhs_t, rt = rhs_t; lt < lhs_b && rt < rhs_b; lt++, rt++){
+            for (img_coord_t ll = lhs_l, rl = rhs_l; ll < lhs_r && rl < rhs_r; ll++, rl++){
+                for (int layer = FIRST; layer < LAYER_CNT; layer++) {
+					if(rand()%4==0)
+					{				
+						sum += ((*(lhs.get_img()))(ll, lt, layer) - (*(rhs.get_img()))(rl, rt, layer)) * ((*(lhs.get_img()))(ll, lt, layer) -(*(rhs.get_img()))(rl, rt, layer))/65025.0;
+						samplesCounter++;
+                    }
+				}
+			}
+		}
+	return 1. - sum/samplesCounter;
+}
+
 Block::Block(const Image* iimage, const img_coord_t ttop, const img_coord_t lleft, const img_size_t hheight, const img_size_t wwidth)
 	: img(iimage), top(ttop), left(lleft), height(hheight), width(wwidth)
 { }
