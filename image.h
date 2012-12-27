@@ -168,7 +168,7 @@ public:
 	void reload(string inputfolder);
 	storage::const_iterator begin();
 	storage::const_iterator end();
-	int size();
+	size_t size();
 	~ImageLibrary();
 };
 #endif
