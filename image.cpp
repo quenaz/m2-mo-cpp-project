@@ -179,17 +179,15 @@ float MseDivergence::compute(const Block& lhs, const Block& rhs) const
                         lhs_r = min(lhs.get_left()+lhs.get_width(), lhs.get_img()->get_width()),
                         rhs_l = rhs.get_left(),
                         rhs_r = min(rhs.get_left()+rhs.get_width(), rhs.get_img()->get_width());
-        long samplesCounter = 0l;
-        float score = .0f;
-		for (img_coord_t lt = lhs_t, rt = rhs_t; lt < lhs_b && rt < rhs_b; lt++, rt++)
-            for (img_coord_t ll = lhs_l, rl = rhs_l; ll < lhs_r && rl < rhs_r; ll++, rl++)
-                        for (int layer = FIRST; layer < LAYER_CNT; layer++) {
-                                int colors_diff = ((*(lhs.get_img()))(ll, lt, layer)-(*(rhs.get_img()))(rl, rt, layer))/255.f;
-                                score += colors_diff*colors_diff;
-                                samplesCounter++;
-                        }
-        score /= samplesCounter;
-        return 1.f - score;
+	long samplesCounter=0;
+	float sum=0;
+	for (img_coord_t lt = lhs_t, rt = rhs_t; lt < lhs_b && rt < rhs_b; lt++, rt++)
+        for (img_coord_t ll = lhs_l, rl = rhs_l; ll < lhs_r && rl < rhs_r; ll++, rl++)
+		for (int layer = FIRST; layer < LAYER_CNT; layer++) {
+			sum += ((*(lhs.get_img()))(ll, lt, layer) - (*(rhs.get_img()))(rl, rt, layer)) * ((*(lhs.get_img()))(ll, lt, layer) -(*(rhs.get_img()))(rl, rt, layer))/65025.0;
+			samplesCounter++;
+		}
+	return 1. - sum/samplesCounter;
 }
 
 float MeanColor::compute(const Block& lhs, const Block& rhs) const
@@ -207,7 +205,7 @@ float MeanColor::compute(const Block& lhs, const Block& rhs) const
         long samplesCounter = 0l;
 	long meanColors[2][LAYER_CNT];
 	memset(meanColors, 0, sizeof(long) * 2 * LAYER_CNT);
-		for (img_coord_t lt = lhs_t, rt = rhs_t; lt < lhs_b && rt < rhs_b; lt++, rt++)
+	for (img_coord_t lt = lhs_t, rt = rhs_t; lt < lhs_b && rt < rhs_b; lt++, rt++)
             for (img_coord_t ll = lhs_l, rl = rhs_l; ll < lhs_r && rl < rhs_r; ll++, rl++)
                 for (int layer = FIRST; layer < LAYER_CNT; layer++) {
 				meanColors[0][layer] += (*(lhs.get_img()))(ll, lt, layer);
@@ -419,7 +417,7 @@ bool BlockIterator::operator!=(const BlockIterator& rhs) const
 
 void ImageLibrary::reload(string inputfolder)
 {
-DIR *dp;
+	DIR *dp;
 	struct dirent *dirp;
 
 	if((dp  = opendir(inputfolder.c_str())) == NULL) 
@@ -445,7 +443,7 @@ DIR *dp;
 
 }
 
-int ImageLibrary::size()
+size_t ImageLibrary::size()
 {
 	return images.size();
 }
