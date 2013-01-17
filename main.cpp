@@ -75,7 +75,7 @@ void print_usage()
 		cout<<"You can choose tile size and divergence measure via command line options. Default measure is the Monte Carlo mean squared error measure and default tile size is 20."<<endl;
 		cout<<"Type \"--mse\" or \"-a\" after the execution command to choose the mean squared error measure."<<endl;
 		cout<<"Type \"--meancolor\" or \"-b\" after the execution command to choose the mean color measure."<<endl;
-		cout<<"Type \"--mcmes\" or \"-c\" after the execution command to choose the Monte Carlo mean squared error measure."<<endl;
+		cout<<"Type \"--mcmse\" or \"-c\" after the execution command to choose the Monte Carlo mean squared error measure."<<endl;
 		cout<<"Type \"--tilesize\" or \"-d\" and a positive integer to choose a tilesize."<<endl;
 		cout<<"Copyright 2012-2013 Artem Oboturov and Ludwig Brummer. All rights reserved."<<endl;
 		cout<<"Images are property of their published and are in public domain, thanks to NASA and other US Administrations."<< endl;
