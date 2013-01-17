@@ -70,7 +70,8 @@ void produce_mosaic_for_all_images_in_folder(string input_folder, string output_
 
 void print_usage()
 {
-		cout<<"This is the help menu for our mosaic maker. You can reenter this menu by launch the program with the command line options \"-h\" or \"help\"."<<endl; 
+		cout<<"This is the help menu for our mosaic maker. You can reenter this menu by launch the program with the command line options \"-h\" or \"--help\"."<<endl;
+		cout<<"If this is your first use of the mosaic maker, you should make sure that you have a good image library, namely images in the folder \"imageLibrary\". If not, use \"make library_generator\" and the library_generator.exe to make one. It has its own help."<<endl;
 		cout<<"You can choose tile size and divergence measure via command line options. Default measure is the Monte Carlo mean squared error measure and default tile size is 20."<<endl;
 		cout<<"Type \"--mse\" or \"-a\" after the execution command to choose the mean squared error measure."<<endl;
 		cout<<"Type \"--meancolor\" or \"-b\" after the execution command to choose the mean color measure."<<endl;
