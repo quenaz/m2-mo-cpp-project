@@ -5,6 +5,8 @@
 #include <getopt.h>
 #include <dirent.h>
 #include <unistd.h>
+#include <sys/stat.h>
+
 
 using namespace std;
 
@@ -84,6 +86,23 @@ void print_usage()
 
 int main(int argc, char *argv[])
 {
+    struct stat dir;
+	//Check if folders exist
+	if(lstat("inputImages", &dir)==-1) {
+		cerr<<"inputImages doesn't exist => no images to process => terminate";
+		exit(-1);
+	}
+	if(lstat("outputImages", &dir)==-1) {
+		cerr<<"outputImages doesn't exist => recreate";
+		if (mkdir("outputImages", S_IRUSR | S_IWUSR | S_IXUSR) == -1) {  
+			exit(-1);
+		}
+	}
+	if(lstat("libraryImages", &dir)==-1) {
+		cerr<<"libraryImages doesn't exist";
+		exit(-1);
+	}
+
 	// Default values
 	int size=20;
 	DivergenceMeasure* divergence = new MCmse;	
