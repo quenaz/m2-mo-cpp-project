@@ -6,11 +6,12 @@
 %\usepackage[framed]{mcode}
 \usepackage[final,pdftex]{graphicx}
 \usepackage{todonotes}
+\usepackage{listings}
 
 \newtheorem{algo}{Algorithme}
 
 \begin{document}
-
+\lstset{language=C++,tabsize=2, numbers=left}
 \listoftodos
 
 \title{Le projet Mosaic}
@@ -20,6 +21,8 @@
 }
 \date{le 21 Janvrier 2013}
 \maketitle
+\section{Description du projet}
+
 
 \section{Organisation de travail sur projet}
 Un probl\`eme, que on a rencontr\'e en d\'ebut de travail sur le projet, c'\'etait la nature distributive de l'\'equipe.
@@ -31,7 +34,7 @@ De plus il est possible de faire des branches dans le projet pour travailler par
 On a cr\'e\'e un projet priv\'e (non accessible par personnes non autoris\'ees).
 \section{Instruction d'emploi}
 Dans le chapitre suivant le mode d'emploi du programme est pr\'esent\'e.
-\subsection{La biblioth\`eque}
+\subsection{La biblioth\`eque des carreaux}
 D'abord on a besoin d'une certaine quantit\'e des images de lesquelles la programme construira la mosa\"{i}que.
  Pour un bon r\'esultat on a besoin de cinquante images au moins dans le dossier "imageLibrary" dans le dossier du programme.
 
@@ -42,25 +45,25 @@ Pour y arriver, on peut utiliser le programme "library\_generator.exe" ou d'abor
  
  Le programme peut \^etre \'execut\'e avec deux different options dans la ligne de commande.
  
- D'abord on peut sp\'ecefier la taille des images souhait\'e apr\`es la commande "- -size" avec un nombre entier positif.
+ D'abord on peut sp\'ecefier la taille des images souhait\'e apr\`es la commande "{-}{-}size" avec un nombre entier positif.
  La taille d\'efaute est 100 pixels.
-Alors un \'execution exemplaire serait ".\textbackslash library\_generator - -size 50".
+Alors un \'execution exemplaire serait ".\textbackslash library\_generator {-}{-}size 50".
 
-Et puis il y a l'option "- -help" qui r\'ep\'etera toute l'information ces instructions.
+Et puis il y a l'option "{-}{-}help" qui r\'ep\'etera toute l'information ces instructions.
 
 Il faut faire attention: le programme ne va pas couper des parties des images mais seulement r\'eduire la taille alors les proportions peuvent \^etre chang\'e.
 Ce fa\c{c}on de r\'eduire a quelque avantages et disavantages mais pourrait facilement \^etre changer par couper la partie d'image qui est "trop" et r\'eduire apr\`es.
 
-\subsection{Le mosaic maker}
+\subsection{Le programme principal}
 Maintenant que nous avons une biblioth\`eque assez grand et de la m\^eme taille dans le dossier "libraryImages", on doit effacer tous les images dans le dossier "inputImages" sauf ceux qui sont destin\'e \`a devenir des mosa\"iques.
 Puis on peut ex\'ecuter la programme ".\textbackslash m2mo\_brummer\_oboturov\_project.exe".
 L\`a aussi il y a des options qui peuvent \^etre ajout\'e dans la ligne de commande.
 
-"- -help" ou "-h" ouvrira plus ou moins les m\^emes informations que ce paragraphe mais n'ex\'ecutera pas le mosaic maker.
+"{-}{-}help" ou "-h" ouvrira plus ou moins les m\^emes informations que ce paragraphe mais n'ex\'ecutera pas le mosaic maker.
 
-Avec les options "- -mse" ou "-a", "- -meancolor" ou "-b" et "- -mcmse" ou "-c" on peut choisir entre des mesures de divergence.
+Avec les options "{-}{-}mse" ou "-a", "{-}{-}meancolor" ou "-b" et "{-}{-}mcmse" ou "-c" on peut choisir entre des mesures de divergence.
 
-Avec l'option "- -tilesize" et un nombre positif entier on peut chosir la taille des carreaux, c'est-\`a-dire les sections qui sont remplacer par des autres images.
+Avec l'option "{-}{-}tilesize" et un nombre positif entier on peut chosir la taille des carreaux, c'est-\`a-dire les sections qui sont remplacer par des autres images.
 
 Les options peuvent \^etre \'ecrit dans n'importe quel ordre.
 Les d\'efautes sont la mesure de Monte Carlo et un taille de 20 pixels.
@@ -74,11 +77,11 @@ Le programme annoncera quand un mosa\"ique est fini.
 
 \subsection{La d\'ecoupage des images}
 
-\subsection{La comparaison entre deux images et les blocks}
+\subsection{La comparaison entre deux images et les blocs}
 
 \subsection{L'ex\'ecution avec des option dans la linge de commande}
 
-\subsection{Le librarymaker}
+\subsection{Le library\_generator}
 
 \section{Algorithmique}
 
@@ -92,53 +95,57 @@ Il se trouve dans la fonction Image\& Image::scale\_to(Image\& downscaled) dans 
 Alors il fait partie de la classe Image comme on peut voir dans le code.
 Elle re\c{c}oit comme param\'etre la reference d'une image "downscaled" qui a la taille \`a laquelle on veut changer l'image originale.
 
-L'algorithme est le suivant:
-\begin{algo}[Scaling]
-\begin{enumerate}
-\item desiredw = width of downscaled,
-	  desiredh = height of downscaled
-\item float paceh = height/desiredh, float pacew = width/desiredw
-\item float norm = paceh*pacew
-\item int y = 0, int x = 0
-\item $for(int i = 0; i < desiredw; i++)$
+L'algorithme est le Listing \ref{algo-scaling}
+%\begin{figure}[h]\label{algo-scaling}
+%\caption{L'algorithme de sous\'echantillonnage lin\'eaire}
+\lstset{caption={L'algorithme de sous\'echantillonnage lin\'eaire},label={algo-scaling}}
+\begin{lstlisting}
+img_size_t	desiredw = downscaled.get_width(),
+			desiredh = downscaled.get_height();
 
-		$x=i*pacew$
-		
-		$for(int j = 0; j < desiredh; j++)$
-		
-		$y = j*paceh$
-		
-			$for(img_color_layer_t layer = 0; layer < LAYER_CNT; layer++)$
-			
-				$float color = 0$
-				
-				$for (int cnth = 0; cnth < int(paceh); cnth++)$
-				
-					$for (int cntw = 0; cntw < int(pacew); cntw++)$
-					
-						$color += (float)(*this)(x + cntw, y + cnth, layer)$
-						
-				
-				$downscaled(i, j, layer) = color/norm$
-
-	
-	$return downscaled;$
-\end{enumerate}
-\end{algo}
-
-
-
+float paceh = height/desiredh;
+float pacew = width/desiredw;
+float norm = paceh*pacew;
+int y = 0;// pixel positions for big image
+int x = 0;
+for(int i = 0; i < desiredw; i++)
+{
+	x=i*pacew;
+	for(int j = 0; j < desiredh; j++)
+	{
+	y = j*paceh;
+		for(img_color_layer_t layer = 0; layer < LAYER_CNT; layer++)
+		{
+			float color = 0;
+			for (int cnth = 0; cnth < int(paceh); cnth++)
+			{
+				for (int cntw = 0; cntw < int(pacew); cntw++)
+					color += (float)(*this)(x + cntw, y + cnth, layer);
+			}
+			downscaled(i, j, layer) = color/norm;
+		}
+	}	
+}
+\end{lstlisting}
+%\end{figure}
 
  D'abord
 
 \subsection{Les mesures de divergence}
-\subsubsection{La mesure de mean squared error}
-\subsubsection{La mesure de mean color}
-\subsubsection{La mesure de mean color refin\'e}
-Si on le fait encore...
-\subsubsection{La mesure de Monte Carlo}
+\subsubsection{La mesure de erreur des moindres carr\'es}
 
-\section{Contributions au projet}
+$X,Y,C$ correspondent aux tailles en dimension horizontal, vertical et couleur. $C$ est toujours 3. 
+\begin{equation}
+err=\frac{1}{X\cdot Y\cdot C}\sum_{x,y,c}\left(\frac{block(x,y,c)-tile_{image}(x,y,c)}{255}\right)^2
+\end{equation}
+\subsubsection{La mesure de couleurs moyens}
+
+\subsubsection{La mesure de Monte Carlo}
+Soient $(Z_{x,y,c})$ une suite des variables al\'eatoires i.i.d. de la loi Bernoulli avec $p~=~0,25$.
+\begin{equation}
+err=\frac{1}{\sum_{x,y,c}Z_{x,y,c}}\sum_{x,y,c}\left(\frac{block(x,y,c)-tile_{image}(x,y,c)}{255}\right)^2\cdot Z_{x,y,c}
+\end{equation}
+
 
 
 \section{Resultats}
