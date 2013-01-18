@@ -3,6 +3,7 @@
 #include <jpeglib.h>
 
 #include <cstdlib>
+#include <cmath>
 #include <algorithm>
 #include <cstring>
 
@@ -212,14 +213,12 @@ float MeanColor::compute(const Block& lhs, const Block& rhs) const
 				meanColors[1][layer] += (*(rhs.get_img()))(rl, rt, layer);
 				samplesCounter++;
                         }
-	float score = 1.f, tmp_score;
+	float score = 0.f, tmp_score;
+	// L1 Error
 	for (int layer = FIRST; layer < LAYER_CNT; layer++) {
-		tmp_score = meanColors[0][layer]/samplesCounter/255.f;
-		if (tmp_score < score) score = tmp_score;
-		tmp_score = meanColors[1][layer]/samplesCounter/255.f;
-		if (tmp_score < score) score = tmp_score;
+        score += (abs(meanColors[0][layer]-meanColors[1][layer])/samplesCounter/255.f);
 	}
-	return score;
+	return 1-score/(float)LAYER_CNT;
 }
 
 float MCmse::compute(const Block& lhs, const Block& rhs) const

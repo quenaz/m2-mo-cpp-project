@@ -89,17 +89,17 @@ int main(int argc, char *argv[])
     struct stat dir;
 	//Check if folders exist
 	if(lstat("inputImages", &dir)==-1) {
-		cerr<<"inputImages doesn't exist => no images to process => terminate";
+		cerr<<"The folder inputImages doesn't exist => no images to process => terminate";
 		exit(-1);
 	}
 	if(lstat("outputImages", &dir)==-1) {
-		cerr<<"outputImages doesn't exist => recreate";
+		cerr<<"The folder outputImages doesn't exist => recreate";
 		if (mkdir("outputImages", S_IRUSR | S_IWUSR | S_IXUSR) == -1) {  
 			exit(-1);
 		}
 	}
 	if(lstat("libraryImages", &dir)==-1) {
-		cerr<<"libraryImages doesn't exist";
+		cerr<<"The folder libraryImages doesn't exist";
 		exit(-1);
 	}
 
