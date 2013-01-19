@@ -27,7 +27,7 @@ class Block;
 class DivergenceMeasure
 {
 public:
-	// Compare blocks with the Mean Square Error proximity measure and returns a value in [0,1].
+	// Compare blocks with the Mean Square Error proximity measure and return a value in [0,1].
 	virtual float compute(const Block& lhs, const Block& rhs) const = 0;
 	virtual ~DivergenceMeasure() = 0;
 };

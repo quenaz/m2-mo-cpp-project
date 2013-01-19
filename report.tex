@@ -13,7 +13,7 @@
 
 \begin{document}
 \lstset{language=C++,tabsize=2, numbers=left}
-\listoftodos
+%\listoftodos
 
 \title{Le projet Mosaic}
 \author{
@@ -76,18 +76,172 @@ Les d\'efautes sont la mesure de Monte Carlo et un taille de 20 pixels.
 
 Le programme annoncera quand un mosa\"ique est fini.
  Ils sont sauvegard\'es dans le dossier "outputImages". 
-\section{Structure de code}
-\subsection{La implementation des images}
 
-\subsection{L'ordre et l'acc\`es aux images}
+\section{Le progiciel et son code source}
+De mani\`ere g\'en\'erale, la documentation pour chaque classe est r\'ealis\'e en forme de commentaires des m\'ethodes.
 
-\subsection{La d\'ecoupage des images}
+Dans notre travail on a largement r\'eutilis\'e le projet fournit par Christian Konrad.
 
-\subsection{La comparaison entre deux images et les blocs}
+\subsection{R\'ealisation des Images}
+Cette classe d\'efinit le concept d'Image.
 
-\subsection{L'ex\'ecution avec des option dans la linge de commande}
+\lstset{caption={La classe Image},label={cpp-class-image}}
+\begin{lstlisting}
+class Image
+{
+public: 
+	typedef BlockIterator iterator;
+	
+	// Defined in the project provided by C. Konrad
+	Image(string filename);
+	Image(img_size_t width, img_size_t height);
+	Image(Image &img);
+	~Image();
+	
+	// Image dimension accessor methods.
+	img_size_t get_width() const;
+	img_size_t get_height() const;
+	
+	// Provide iterator over Blocks which is the Image is divided into.
+	iterator begin(const img_size_t height, const img_size_t width);
+	iterator end(const img_size_t height, const img_size_t width);
+	
+	// Persist image from memory into a file.
+	void save(string filename);
+	
+	// Method to flip Image horizontally.
+	void flip_horizontally();
+	
+	// Accessor to a pixel at specified coordinate.
+	img_color_t& operator()
+		(img_coord_t x, img_coord_t y, img_color_layer_t layer) const;
+	
+	// Scale this Image into an Image of different size (which MUST be defined
+	// in advance for a new Image).
+	Image& scale_to(Image& downscaled) const; 
+};
+\end{lstlisting}
+
+\subsection{D\'ecoupage des Images en Blocs}
+Chaque Image peut-\^etre repr\'esent\'ee comme une s\'equence des blocs.
+Bloc est un rectangle correspondant \`a une partie de l'Image et est d\'efini par ces coordonn\'ees de gauche-haute et de droit-basse.
+C'est un concept naturel pour d\'efinir des algorithmes sur les parties matricielles des Images.
+Une nuance de r\'ealisation: le bloc ne alloue pas de m\'empire pour stocker des pixels d'Image auxquelles il correspond.
+
+\lstset{caption={La classe Block},label={cpp-class-block}}
+\begin{lstlisting}
+class Block
+{
+public:
+	Block(const Image* image, const img_coord_t top, const img_coord_t left,
+		const img_size_t height, const img_size_t width);
+		
+	// Accessors to Block dimensions.
+	img_coord_t get_left() const { return left; }
+	img_coord_t get_top() const { return top; }
+	img_size_t get_height() const { return height; }
+	img_size_t get_width() const { return width; }
+	
+	// Get pointer to Image this Block references to.
+	const Image* get_img() const { return img; }
+	
+	// Copy content from another Block into this Block.
+	void copy_content(Block& to_copy);
+};
+\end{lstlisting}
+
+On peux parcourir des Blocs d'Image avec un iterator BlockIterator.
+On a conceptualis\'e, que l'utilisateur de la classe Image va la parcourir de fa\c{c}on d\'efini par le Forward-Iterator.
+
+\lstset{caption={La classe BlockIterator},label={cpp-class-block-iterator}}
+\begin{lstlisting}
+class BlockIterator
+{
+public:
+	BlockIterator(Image* image, const img_size_t block_height,
+		const img_size_t block_width);
+
+	// Reference to an Instance representing the End of a BlockIterator.	
+	BlockIterator& end();
+
+	// Standard methods for a Forward-Iterator.
+	Block& operator*();
+	Block* operator->();
+	BlockIterator& operator++();
+	bool operator==(const BlockIterator&) const;
+	bool operator!=(const BlockIterator&) const;
+};
+\end{lstlisting}
+
+\subsection{Cr\'eation de mosa\"ique}
+La mesure de divergence est une classe polymorphe.
+Donc, chaque mesure est d\'efini dans une classe concret, qui r\'ealise une distance de divergence entre deux blocs.
+
+\lstset{caption={La mesure de divergence},label={cpp-class-divergence-measure}}
+\begin{lstlisting}
+class DivergenceMeasure
+{
+public:
+	// Compare blocks with the Mean Square Error proximity measure
+	// and returns a value in [0,1].
+	virtual float compute(const Block& lhs, const Block& rhs) const = 0;
+	virtual ~DivergenceMeasure() = 0;
+};
+\end{lstlisting}
+
+Pour augmenter la performance de parcours de la biblioth\`eque des images, on a fait un cache de ces images en fixant leur taille \`a BLOCK\_SZ.
+
+\lstset{caption={L'algorothme de cr\'eation de mosa\"ique},label={cpp-mosaic}}
+\begin{lstlisting}
+ImageLibrary& archive;
+Image* target_image;
+DivergenceMeasure* divergence;
+int BLOCK_SZ;
+
+Image::iterator begin = target_image->begin(BLOCK_SZ, BLOCK_SZ),
+	end = target_image->end(BLOCK_SZ, BLOCK_SZ);
+// Scale down images from library.
+Image	library(archive.size() * BLOCK_SZ, BLOCK_SZ),
+	downscaled_img(BLOCK_SZ, BLOCK_SZ);
+size_t cnt = 0;
+for (ImageLibrary::storage::const_iterator image_in_lib_it = archive.begin();
+	image_in_lib_it != archive.end(); ++image_in_lib_it, ++cnt)
+{
+	(*image_in_lib_it)->scale_to(downscaled_img);
+	Block downscaled_block(&downscaled_img, 0, 0, BLOCK_SZ, BLOCK_SZ);
+	Block(&library, 0, cnt * BLOCK_SZ, BLOCK_SZ, BLOCK_SZ)
+		.copy_content(downscaled_block);
+}
+// Create mosaic.
+for (Image::iterator blockIt = begin; blockIt != end; ++blockIt)
+{
+	float prox = 0.f;
+	Image::iterator	begin = library.begin(BLOCK_SZ, BLOCK_SZ),
+			end = library.end(BLOCK_SZ, BLOCK_SZ);
+	Block chosen_tile(NULL, 0, 0, BLOCK_SZ, BLOCK_SZ);
+	for (Image::iterator libIt = begin; libIt != end; ++libIt)
+	{
+		float div_res = (*divergence).compute(*libIt, *blockIt);
+		if (div_res > prox)
+		{
+			prox = div_res;
+			chosen_tile = *libIt;
+		}
+	}
+	(*blockIt).copy_content(chosen_tile);
+	cout << "*";
+	cout.flush();
+}
+\end{lstlisting}
+
+\subsection{Ex\'ecution avec des options de ligne des commandes}
+Le progiciel soutien les param\`etres de ligne des commandes.
+Cette fonctionnalit\'e est r\'esalis\'e avec la biblioth\`eque 'Getopt' de stdlibc.
 
 \subsection{Le library\_generator}
+On a cr\'e\'e une utilit\'e pour convertir les images arbitraires en format JPEG vers la taille de $ 100px \times 100px $.
+Pour la compiler il faut appeler `make library\_generator`.
+Les instructions d'utilisations sont accessible, si quelqu'un l'appelle avec un param\`etre '-h'.
 
 \section{Algorithmique}
 

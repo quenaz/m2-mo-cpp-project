@@ -14,8 +14,6 @@ void create_mosaic(ImageLibrary& archive, Image* target_image, DivergenceMeasure
 {
 	Image::iterator begin = target_image->begin(BLOCK_SZ, BLOCK_SZ),
 		end = target_image->end(BLOCK_SZ, BLOCK_SZ);
-	int aa = 0;
-	char aaa[30]; 
 	// Scale down images from library.
 	Image	library(archive.size() * BLOCK_SZ, BLOCK_SZ),
 		downscaled_img(BLOCK_SZ, BLOCK_SZ);
