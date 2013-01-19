@@ -341,6 +341,7 @@ Cette mesure \'etait implement\'e en \'esperant que il est plus vite que la mesu
 Ensuite la mode de fonctionnement de la mesure:
 Soient $(Z_{x,y,c})$ une suite des variables al\'eatoires i.i.d. de la loi Bernoulli avec $p~=~0,25$.
 $c\in \{r,v,b\}$ indique le niveau de couleur.
+Alors l'erreur est:
 \begin{equation}
 err=\frac{1}{\sum_{x,y,c}Z_{x,y,c}}\sum_{x,y,c}\left(\frac{block(x,y,c)-tile_{image}(x,y,c)}{255}\right)^2\cdot Z_{x,y,c}
 \end{equation}
@@ -349,7 +350,7 @@ err=\frac{1}{\sum_{x,y,c}Z_{x,y,c}}\sum_{x,y,c}\left(\frac{block(x,y,c)-tile_{im
 
 \section{Resultats}
 Enfin les r\'esultats avec des mesures de divergence differents seront compar\'e dans les disciplines vitesse et qualit\'e.
-On utilisera une biblioth\`eque de 943 images pour transformer des images de test guybrush.jpg,  IMG\_1293\_small.JPG, IMG\_1331.JPG sur le m\^eme  ordinateur.
+On utilisera une biblioth\`eque de 943 images pour transformer des images de test guybrush.jpg,  IMG\_1293\_small.JPG, IMG\_1331.JPG sur le m\^eme  ordinateur avec la d\'efaute tilesize $=20$.
 Ils ont un taille de 800 x 1129, 800 x 600 et 800 x 600.
 Les dur\'ees de constuction peut \^etre vu dans la Table \ref{tab:temps}.
 \begin{table}
