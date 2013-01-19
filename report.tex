@@ -305,16 +305,42 @@ Comme \c{c}a, il n'y a pas des erreurs dans le calcul, mais les positions sont a
 \end{figure}
 
 \subsection{Les mesures de divergence}
-\subsubsection{La mesure de erreur des moindres carr\'es}
+Les mesures de divergence comparent des parties de l'image originale, alors les "blocks" dans le code, avec des futurs carreaux ou "tiles" du mosa\"ique, alors les images de la biblioth\`eque.
+Chaque mesure retourne un nombre entre 0 et 1.
+0 indique tr\`es peu ressemblance entre le block et le tile et 1 beaucoup de ressemblance. 
+Alors le tile avec la plus grande nombre remplace le bloc.
 
-$X,Y,C$ correspondent aux tailles en dimension horizontal, vertical et couleur. $C$ est toujours 3. 
+Chaque mesure a un différent notion de ressemblance qui sera \'expliqu\'e dans les prochains s\'ections.
+
+\subsubsection{La mesure d'erreur des moindres carr\'es}
+
+On peut voir les pixel d'un image comme vecteur 5-dimensionnel.
+Les premi\'eres deux dimensions sont la position du pixel dans l'image.
+La reste contient un code pour les couleurs. Chaque dimension repr\'esente un des couleurs rouge, vert et bleu (Codage RVB) et des valeurs entre 0 et 255 qui repr\'esente l'intensit\'e de ce couleur.
+Alors un pixel avec des couleurs (0,0,255) est bleu;
+(0,0,0) est noir et (255,255,255) est blanc.
+
+La formule suivante donne la mesure de erreur des moindres carr\'es.
+C'est la difference de tout les pixels d'un block avec tout les pixels d'un tile dans la $L^2$-norme renormalis\'ee par la taille $X\cdot Y$ du block (ou du tile, c'est la m\^eme) et $C=3$ pour les couleurs. 
 \begin{equation}
-err=\frac{1}{X\cdot Y\cdot C}\sum_{x,y,c}\left(\frac{block(x,y,c)-tile_{image}(x,y,c)}{255}\right)^2
+err=\frac{1}{X\cdot Y\cdot C}\sum_{x,y,c}\left(\frac{block(x,y,r,v,b)-tile_{image}(x,y,r,v,b)}{255}\right)^2
 \end{equation}
+ 
 \subsubsection{La mesure de couleurs moyens}
+La mesure de couleurs moyens est en fait tr\`es similaire \`a la mesure d'erreur des moindres carr\'es mais \`a la place de la $L^2$-norme, on prend la $L^1$-norme:
+\begin{equation}
+err=\frac{1}{X\cdot Y\cdot C}\sum_{x,y,c}\left|\frac{block(x,y,r,v,b)-tile_{image}(x,y,r,v,b)}{255}\right|
+\end{equation}
 
 \subsubsection{La mesure de Monte Carlo}
+La mesure de Monte Carlo utilise presque la m\^eme fonctionne que la mesure d'erreur des moindres carr\'es.
+La seule difference est que il ne compare pas tous les vecteurs mais d\'ecide avec une fonctionne al\'eatoire quelle pixels sont compar\'es au niveau de quelle couleur.
+
+Cette mesure \'etait implement\'e en \'esperant que il est plus vite que la mesure d'erreur des moindres carr\'es en donnant encore un r\'esultat acceptable.
+
+Ensuite la mode de fonctionnement de la mesure:
 Soient $(Z_{x,y,c})$ une suite des variables al\'eatoires i.i.d. de la loi Bernoulli avec $p~=~0,25$.
+$c\in \{r,v,b\}$ indique le niveau de couleur.
 \begin{equation}
 err=\frac{1}{\sum_{x,y,c}Z_{x,y,c}}\sum_{x,y,c}\left(\frac{block(x,y,c)-tile_{image}(x,y,c)}{255}\right)^2\cdot Z_{x,y,c}
 \end{equation}
@@ -322,9 +348,53 @@ err=\frac{1}{\sum_{x,y,c}Z_{x,y,c}}\sum_{x,y,c}\left(\frac{block(x,y,c)-tile_{im
 
 
 \section{Resultats}
-Comparaison des mesures de divergence: vitesse, qualit\'e (subjectif)
-Exp\'erimente sur le m\^eme ordinateur avec 200 (nombre aléatoire mais fixe) images entre les mesures.
- Prends le temps. Apr\`es montre les r\'esultats et discute un peu la qualit\'e. 
+Enfin les r\'esultats avec des mesures de divergence differents seront compar\'e dans les disciplines vitesse et qualit\'e.
+On utilisera une biblioth\`eque de 943 images pour transformer des images de test guybrush.jpg,  IMG\_1293\_small.JPG, IMG\_1331.JPG sur le m\^eme  ordinateur.
+Ils ont un taille de 800 x 1129, 800 x 600 et 800 x 600.
+Les dur\'ees de constuction peut \^etre vu dans la Table \ref{tab:temps}.
+\begin{table}
+
+\caption{Temps d'\'execution avec des mesures differents}
+
+\begin{tabular}{|c|c|c|c|}
+\hline 
+Mesure & guybrush.jpg & IMG\_1293\_small.JPG & IMG\_1331.JPG \\ 
+\hline 
+Erreur des moindres carr\'es & 1:13 min & 0:38 min & 0:39 min \\ 
+\hline 
+Couleur moyenne & 0:58 min & 0:31 min & 0:29 min \\ 
+\hline 
+Monte Carlo & 0:47 min & 0:25 min & 0:25 min \\ 
+\hline 
+\end{tabular}
+\label{tab:temps}  
+\end{table}
+Alors la mesure de Monte Carlo est la plus vite comme \'esper\'e et l'erreur des moindres carr\'es est le plus lente.
+C'est-\`a-dire que l'on pourrait impl\'ementer une mesure de Monte Carlo Couleur moyenne qui est encore plus vite.
+De plus, le param\`etre $p=0,25$ n'est probablement pas encore optimal.
+On peut le r\'eduire probablement encore sans grande perte de qualit\'e.
+
+Au niveau de la qualit\'e une d\'ecision objectif n'est pas aussi simple. On peux voir des images de test dans les Figures \ref{fig:mse}, \ref{fig:mean} et \ref{fig:mcmse}.
+
+La diff\'erence entre les Figures \ref{fig:mse} et \ref{fig:mcmse} n'est pas tr\`es grand, alors on  peut probablement r\'eduire $p$ encore plus et on pr\'ef\`ere la mesure de Monte Carlo, car il est plus vite.  
+La difference entre Figure \ref{fig:mean} et les autres n'est pas aussi facile \`a voir.
+La mesure des erreurs de moindres carr\'es pr\'ef\`ere apparemment des tiles plut\^ot monochromatique tandis que la mesure de couleurs moyens utilise des tiles avec plus de contraste.
+Mais ce n'est pas facile \`a dire qui est mieux et reste probablement une question de situation et go\^ut. 
+\begin{figure}
+  \centerline{\psfig{figure=guybrushmse.jpg,width=120mm}}
+  \caption{Le r\'esultat de l'image de test guybrush.jpg avec la mesure des moindres carr\'es}
+  \label{fig:mse}
+\end{figure}
+\begin{figure}
+  \centerline{\psfig{figure=guybrushmeancolor.jpg,width=120mm}}
+  \caption{Le r\'esultat de l'image de test guybrush.jpg avec la mesure de couleurs moyens}
+  \label{fig:mean}
+\end{figure}
+\begin{figure}
+  \centerline{\psfig{figure=guybrushmcmse.jpg,width=120mm}}
+  \caption{Le r\'esultat de l'image de test guybrush.jpg avec la mesure de Monte Carlo}
+  \label{fig:mcmse}
+\end{figure}
 
 %\begin{figure}[t]
 %	\begin{center}

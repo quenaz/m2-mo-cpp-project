@@ -185,7 +185,8 @@ float MseDivergence::compute(const Block& lhs, const Block& rhs) const
 	for (img_coord_t lt = lhs_t, rt = rhs_t; lt < lhs_b && rt < rhs_b; lt++, rt++)
         for (img_coord_t ll = lhs_l, rl = rhs_l; ll < lhs_r && rl < rhs_r; ll++, rl++)
 		for (int layer = FIRST; layer < LAYER_CNT; layer++) {
-			sum += ((*(lhs.get_img()))(ll, lt, layer) - (*(rhs.get_img()))(rl, rt, layer)) * ((*(lhs.get_img()))(ll, lt, layer) -(*(rhs.get_img()))(rl, rt, layer))/65025.0;
+			float temp=((*(lhs.get_img()))(ll, lt, layer) - (*(rhs.get_img()))(rl, rt, layer));
+			sum +=  temp * temp/65025.0;
 			samplesCounter++;
 		}
 	return 1. - sum/samplesCounter;
@@ -240,7 +241,8 @@ float MCmse::compute(const Block& lhs, const Block& rhs) const
                 for (int layer = FIRST; layer < LAYER_CNT; layer++) {
 					if(rand()%4==0)
 					{				
-						sum += ((*(lhs.get_img()))(ll, lt, layer) - (*(rhs.get_img()))(rl, rt, layer)) * ((*(lhs.get_img()))(ll, lt, layer) -(*(rhs.get_img()))(rl, rt, layer))/65025.0;
+						float temp=((*(lhs.get_img()))(ll, lt, layer) - (*(rhs.get_img()))(rl, rt, layer));
+						sum +=  temp * temp/65025.0;
 						samplesCounter++;
                     }
 				}
