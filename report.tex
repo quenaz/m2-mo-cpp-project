@@ -6,6 +6,7 @@
 %\usepackage[framed]{mcode}
 \usepackage[final,pdftex]{graphicx}
 \usepackage{todonotes}
+\usepackage[dvips]{epsfig}
 \usepackage{listings}
 
 \newtheorem{algo}{Algorithme}
@@ -22,7 +23,12 @@
 \date{le 21 Janvrier 2013}
 \maketitle
 \section{Description du projet}
+Dans le cadre du Master 2 Mod\'elistaion Al\'eatoire \`a l'Universit\'e Paris VII Denis Diderot les \'etudiants  doivent r\'ealiser un projet de C++ en bin\^ome pour montrer leur capacit\'e de programmation.
+Cette ann\'ee le cible du projet \'etait la r\'ealisation d'un photomosa\"ique, c'est-\`a-dire un programme qui reconstruit un image en rempla\c{c}ant des parties de cet image par des autres images.
+Ce texte d\'ecrit le programme d'Artem Oboturov et Ludwig Brummer.
 
+Dans ce qui suit on parlera de l'organisation du projet dans le chapitre 2 et donnera un mode d'emploi  dans la section 3. Puis la structure de code est \'expliqu\'ee dans la partie 4 et quelques algorithmes sont discut\'es dans le chapitre 5.
+Enfin on montrera quelques r\'esultats. 
 
 \section{Organisation de travail sur projet}
 Un probl\`eme, que on a rencontr\'e en d\'ebut de travail sur le projet, c'\'etait la nature distributive de l'\'equipe.
@@ -85,19 +91,17 @@ Le programme annoncera quand un mosa\"ique est fini.
 
 \section{Algorithmique}
 
-\subsection{Le scaling algorithme}
+\subsection{L'algorithme de sous\'echantillonnage lin\'eaire}
 
-Le scaling algorithme est utilis\'e pour changer tout les images destin\'e pour la bibliothèque à une taille uniforme.
-Ici on doit se rendre compte qu'il est seulement capable à diminuer la taille des images car c'est l'usage r\'ealiste pendant un construction d'un mosa\"{i}que.  
+L'algorithme de sous\'echantillonnage lin\'eaire ou de scaling est utilis\'e pour changer tout les images destin\'e pour la bibliothèque \`a une taille uniforme.
+Ici on doit se rendre compte qu'il est seulement capable de diminuer la taille des images car c'est l'usage r\'ealiste pendant un construction d'un mosa\"{i}que.  
 Pendant un agrandissement il y aura des fautes.
 
-Il se trouve dans la fonction Image\& Image::scale\_to(Image\& downscaled) dans les fichiers image.h et image.cpp.
+L'algorithme se trouve dans la fonction Image\& Image::scale\_to(Image\& downscaled) dans les fichiers image.h et image.cpp.
 Alors il fait partie de la classe Image comme on peut voir dans le code.
-Elle re\c{c}oit comme param\'etre la reference d'une image "downscaled" qui a la taille \`a laquelle on veut changer l'image originale.
+La fonction re\c{c}oit comme param\'etre la reference d'une image "downscaled" qui a la taille \`a laquelle on veut changer l'image originale.
 
-L'algorithme est le Listing \ref{algo-scaling}
-%\begin{figure}[h]\label{algo-scaling}
-%\caption{L'algorithme de sous\'echantillonnage lin\'eaire}
+On peut trouver le code dans le Listing \ref{algo-scaling}.
 \lstset{caption={L'algorithme de sous\'echantillonnage lin\'eaire},label={algo-scaling}}
 \begin{lstlisting}
 img_size_t	desiredw = downscaled.get_width(),
@@ -127,9 +131,24 @@ for(int i = 0; i < desiredw; i++)
 	}	
 }
 \end{lstlisting}
-%\end{figure}
 
- D'abord
+ Grosso modo l'algorithme prend un carr\'e des plusieurs pixels, calcule la moyenne des couleurs et met un pixel avec le couleur moyen \`a la place de ces pixels.
+C'est illustr\'e par Figure \ref{fig:carres}.
+Comme \c{c}a, la taille d'un image est r\'eduit.
+La prise de la moyenne est fait s\'epar\'ement pour  chaque couleur (boucle l.15-24) en additionnant tout les intensit\'es de ce couleur dans pixels du carr\'e choisi (l. 21) et les divisant par la taille du carr\'e (norm dans le code, l. 23).
+
+Cette approche de r\'eduction est plut\^ot \'evidente. La difficult\'e est de choisir les bonnes tailles pour les carr\'es \`a r\'eduire.
+C'est r\'ealis\'e par les lignes 4-14 et illustr\'e par Figure \ref{fig:carres}.
+Ici on utilise la fa\c{c}on comment C++ sauvegarde et transforme des variables.
+Des pas, alors les longueurs des c\^otes du carr\'e \`a r\'eduire,  sont d\'efinis comme floats aux lignes 4 et 5 car la proportion entre la hauteur respectivement la largeur d'un image et la hauteur souhait\'e respectivement la largeur souhait\'e n'est pas toujours un entier.
+Mais les carr\'es \`a r\'eduire ne peuvent avoir qu'un longueur entier.
+Alors on d\'efinie la position \`a gauche et en haut   dan le carr\'e \`a r\'eduire comme couplet des entiers $(x,y)$ mais fait le calcul de la position avec des floats.
+Comme \c{c}a, il n'y a pas des erreurs dans le calcul, mais les positions sont automatiquement transform\'e en entiers et les tailles des carr\'es vacillent entre les deux entiers qui entourent les pas.
+\begin{figure}
+  \centerline{\psfig{figure=scale_to.png,width=160mm}}
+  \caption{Un illustration du choix des bonnes tailles pour les carr\'es \`a r\'eduire}
+  \label{fig:carres}
+\end{figure}
 
 \subsection{Les mesures de divergence}
 \subsubsection{La mesure de erreur des moindres carr\'es}
