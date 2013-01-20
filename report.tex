@@ -55,7 +55,7 @@ Pour y arriver, on peut utiliser le programme "library\_generator.exe" ou d'abor
  La taille d\'efaute est 100 pixels.
 Alors un \'execution exemplaire serait ".\textbackslash library\_generator {-}{-}size 50".
 
-Et puis il y a l'option "{-}{-}help" qui r\'ep\'etera toute l'information ces instructions.
+Et puis il y a l'option "{-}{-}help" qui r\'ep\'etera toute l'information de ces instructions.
 
 Il faut faire attention: le programme ne va pas couper des parties des images mais seulement r\'eduire la taille alors les proportions peuvent \^etre chang\'e.
 Ce fa\c{c}on de r\'eduire a quelque avantages et disavantages mais pourrait facilement \^etre changer par couper la partie d'image qui est "trop" et r\'eduire apr\`es.
@@ -69,7 +69,7 @@ L\`a aussi il y a des options qui peuvent \^etre ajout\'e dans la ligne de comma
 
 Avec les options "{-}{-}mse" ou "-a", "{-}{-}meancolor" ou "-b" et "{-}{-}mcmse" ou "-c" on peut choisir entre des mesures de divergence.
 
-Avec l'option "{-}{-}tilesize" et un nombre positif entier on peut chosir la taille des carreaux, c'est-\`a-dire les sections qui sont remplacer par des autres images.
+Avec l'option "{-}{-}tilesize" et un nombre positif entier on peut choisir la taille des carreaux, c'est-\`a-dire les sections qui sont remplacer par des autres images.
 
 Les options peuvent \^etre \'ecrit dans n'importe quel ordre.
 Les d\'efautes sont la mesure de Monte Carlo et un taille de 20 pixels.
@@ -126,7 +126,11 @@ public:
 Chaque Image peut-\^etre repr\'esent\'ee comme une s\'equence des blocs.
 Bloc est un rectangle correspondant \`a une partie de l'Image et est d\'efini par ces coordonn\'ees de gauche-haute et de droit-basse.
 C'est un concept naturel pour d\'efinir des algorithmes sur les parties matricielles des Images.
+<<<<<<< HEAD
 Une nuance de r\'ealisation: le bloc ne alloue pas de m\'emoire pour stocker des pixels d'Image auxquels il correspond.
+=======
+Une nuance de r\'ealisation: le bloc ne alloue pas de m\'emoire pour stocker des pixels d'Image auxquelles il correspond.
+>>>>>>> Some errors found. Project ready for send off
 
 \lstset{caption={La classe Block},label={cpp-class-block}}
 \begin{lstlisting}
@@ -296,7 +300,7 @@ C'est r\'ealis\'e par les lignes 4-14 et illustr\'e par Figure \ref{fig:carres}.
 Ici on utilise la fa\c{c}on comment C++ sauvegarde et transforme des variables.
 Des pas, alors les longueurs des c\^otes du carr\'e \`a r\'eduire,  sont d\'efinis comme floats aux lignes 4 et 5 car la proportion entre la hauteur respectivement la largeur d'un image et la hauteur souhait\'e respectivement la largeur souhait\'e n'est pas toujours un entier.
 Mais les carr\'es \`a r\'eduire ne peuvent avoir qu'un longueur entier.
-Alors on d\'efinie la position \`a gauche et en haut   dan le carr\'e \`a r\'eduire comme couplet des entiers $(x,y)$ mais fait le calcul de la position avec des floats.
+Alors on d\'efinie la position \`a gauche et en haut   dans le carr\'e \`a r\'eduire comme couplet des entiers $(x,y)$ mais fait le calcul de la position avec des floats.
 Comme \c{c}a, il n'y a pas des erreurs dans le calcul, mais les positions sont automatiquement transform\'e en entiers et les tailles des carr\'es vacillent entre les deux entiers qui entourent les pas.
 \begin{figure}
   \centerline{\psfig{figure=scale_to.png,width=160mm}}
