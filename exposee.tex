@@ -1,0 +1,289 @@
+\documentclass[handout]{beamer}
+% Januar  2012
+
+%\documentclass{beamer}
+
+%\usetheme{Warsaw}
+%\usetheme{Berkeley}
+\usetheme{JuanLesPins}
+%\usepackage{ngerman}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{graphics}
+%\usepackage{pgfpages}
+\usepackage{psfrag}
+\usepackage{chicago}
+%\pgfpagelayout{2 on 1}[a4paper,border shrink=5mm]
+\newcommand{\tcb}{\color{blue}}
+\newcommand{\tcg}{\color{green}}
+\newcommand{\tcr}{\color{red}}
+\newcommand{\tco}{\color{orange}}
+\newcommand{\tcm}{\color{magenta}}
+\newcommand{\ftheta}{\mbox{\boldmath $\theta$}}
+\newcommand{\btheta}{\mbox{\boldmath $\theta$}}
+\newcommand{\feta}{\mbox{\boldmath $\eta$}}
+\newcommand{\fnu}{\mbox{\boldmath $\nu$}}
+\newcommand{\frho}{\mbox{\boldmath $\rho$}}
+\newcommand{\fm}{\mbox{\bf m}}
+\newcommand{\m}{\ensuremath{\mathbf m}}
+\setbeamertemplate{footline}[page number]
+\begin{document}
+
+
+\title[Le projet Mosaic]
+{\bf Le projet Mosaic \\
+}
+\author[ L. Brummer]{{\bf Ludwig Brummer}\\
+\texttt{ludwig.brummer@mytum.de \\
+\bf Artem Oboturov}\\
+\texttt{oboturov@telecom-paristech.fr} \\
+ }
+\date{29 janvier 2013}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{\bf Synoptique} \tableofcontents
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{Organisation de travail sur projet}
+
+\begin{frame}
+\begin{center}
+{\Huge GitHub}
+\end{center}
+\begin{figure}[H]
+\includegraphics[scale=0.50]{GitHub.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{\bf Des probl\`emes...}
+\begin{figure}[H]
+\includegraphics[scale=0.36]{GitHubIssues.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{\bf et des solutions}
+\begin{figure}[H]
+\includegraphics[scale=0.36]{GitHubCommits.png}
+\end{figure}
+\end{frame}
+
+\section{Instruction d'emploi}
+\begin{frame}
+\begin{center}
+{\Huge Instruction d'emploi}
+\end{center}
+\end{frame}
+
+
+\subsection{La biblioth\`eque des carreaux}
+
+\begin{frame}
+\frametitle{\bf La biblioth\`eque des carreaux}
+Le programme a besoin de quelques images de m\^eme taille pour construire une mosa\"{i}que.
+\begin{itemize}
+\item {\tcb Location}: Dossier "libraryImages"
+
+\item {\tcb library\_generator}: ex\'ecutable\ avec {-}{-}size ou {-}{-}help
+
+\item {\tcb taille}: {-}{-}size XX
+\end{itemize}
+
+\end{frame}
+
+\subsection{Le programme principal}
+
+\begin{frame}
+\frametitle{\bf Le programme principal}
+Le programme a besoin de quelques images de m\^eme taille pour construire une mosa\"{i}que.
+\begin{itemize}
+\item {\tcb Location}: Dossier "inputImages"
+
+\item {\tcb options}: ex\'ecutable\ avec {-}{-}tilesize XX, {-}{-}help, {-}{-}mse, {-}{-}meancolor, {-}{-}mcmse
+
+\item {\tcb Resultats}: Dossier "outputImages"
+\end{itemize}
+
+\end{frame}
+
+\section{Le logiciel et son code source}
+
+\begin{frame}
+\begin{center}
+{\Huge Code}
+\end{center}
+
+\end{frame}
+
+\subsection{R\'ealisation des Images}
+\begin{frame}
+
+\frametitle{\bf Die Momentenmethode}
+{\tcb Ziel:} NIG-Verteilung m\"oglichst nahe an die empirische Verteilung der Marktdaten anlegen\\ \pause
+{\tcb Idee:} Dr\"ucke die Parameter durch die ersten 4 Momente aus und sch\"atze die Momente aus den Marktdaten
+
+\end{frame}
+
+\begin{frame}
+\frametitle{\bf Die Momentenmethode}
+Es gelte $3k>5s^2>0, \quad \rho=3ks^{-2}-4>1$ und $m$, $v$, $s$, $k$ zentrale empirsche Momente:
+\begin{align*}
+\hat{\alpha}&=3\sqrt{\rho v}(\rho-1)|s|^{-1}  &\hat{\beta}=3/(s\sqrt{v}(\rho-1))\quad\\
+\hat{\mu}&=m-3\sqrt{v}/(\rho s)  &\hat{\delta}=3\sqrt{v(\rho-1)}/(|s|\rho)
+\end{align*}
+\end{frame}
+
+
+
+\subsection{D\'ecoupage des Images en Blocs}
+\subsection{Cr\'eation de mosa\"ique}
+\subsection{Ex\'ecution avec des options de ligne des commandes}
+\subsection{Le library\_generator}
+\begin{frame}
+\frametitle{\bf Die Esschertransformation}
+\begin{itemize}
+\item L\'evy-Prozess ist nicht stetig $\Rightarrow$ Markt ist nicht vollst\"andig
+$\Rightarrow$ Es existiert kein eindeutiges risikoneutrales Ma\ss.\\
+
+\item Esschertransformation f\"ur Dichten:
+
+\begin{align*}
+f_t(x,\theta)=&\frac{exp(\theta x)f_t(x)}{\int\limits_{\mathbb{R}}exp(\theta y)f_t(y)dy}=\frac{exp(\theta x)f_t(x)}{M_{X_t}(\theta)}, \quad \theta\in\mathbb{R}
+\end{align*}
+\item Oder analog f\"ur die Momenterzeugenden Funktionen:
+\begin{align*}
+M_{X_t,\theta}(u)=&\frac{M_{X_t}(u+\theta)}{M_{X_t}(u)}
+\end{align*}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{\bf Die Esschertransformation}
+{\tcb Ziel:} Passendes $\theta$ finden\\ \pause
+{\tcb Idee:} Im risikoneutralen Ma\ss \ $P_\theta$ soll unser diskontierter Preisprozess $\{exp(-rt)S(t)\}_{t\ge0}$ ein Martingal sein; schlie\ss lich soll gelten:
+\begin{align*}
+S(0)=&E_\theta[exp(-rt)S(t)]= \\
+=&exp(-rt)E_\theta[S(0)exp(X_t)]
+\end{align*}
+\end{frame}
+
+\section{Algorithmes}
+
+\begin{frame}
+\begin{center}
+{\Huge Algorithmes}
+\end{center}
+\end{frame}
+
+\subsection{L'algorithme de sous\'echantillonnage lin\'eaire}
+\begin{frame}
+\frametitle{\bf Sous\'echantillonnage}
+\begin{figure}[H]
+\includegraphics[scale=0.36]{scale_to.png}
+\end{figure}
+\end{frame}
+
+
+\subsection{Les mesures de divergence}
+
+\begin{frame}
+\frametitle{\bf La mesure d'erreur des moindres carr\'es}
+\begin{equation*}
+err=\frac{1}{X\cdot Y\cdot C}\sum_{x,y,c}\left(\frac{block(x,y,r,v,b)-tile_{image}(x,y,r,v,b)}{255}\right)^2
+\end{equation*}
+\end{frame}
+
+\begin{frame}
+\frametitle{\bf La mesure de couleurs moyens}
+\begin{equation*}
+err=\frac{1}{X\cdot Y\cdot C}\sum_{x,y,c}\left|\frac{block(x,y,r,v,b)-tile_{image}(x,y,r,v,b)}{255}\right|
+\end{equation*}
+\end{frame}
+\begin{frame}
+\frametitle{\bf La mesure de Monte Carlo}
+Soient $(Z_{x,y,c})$ une suite des variables al\'eatoires i.i.d. de la loi Bernoulli avec $p~=~0,25$.
+$c\in \{r,v,b\}$ indique le niveau de couleur.
+Alors l'erreur est:
+\begin{equation*}
+err=\frac{1}{\sum_{x,y,c}Z_{x,y,c}}\sum_{x,y,c}\left(\frac{block(x,y,c)-tile_{image}(x,y,c)}{255}\right)^2\cdot Z_{x,y,c}
+\end{equation*}
+\end{frame}
+\section{Resultats}
+
+\begin{frame}
+\begin{center}
+{\Huge Resultats}
+\end{center}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{\bf Temps d'\'execution avec des mesures differents}
+\begin{table}
+\begin{tabular}{|c|c|c|c|}
+\hline 
+\small Mesure & \small guybrush.jpg & \small IMG\_1293\_small.JPG & \small IMG\_1331.JPG \\ 
+\hline 
+\small MSE & 1:13 min & 0:38 min & 0:39 min \\ 
+\hline 
+\small Couleur moyenne & 0:58 min & 0:31 min & 0:29 min \\ 
+\hline 
+\small Monte Carlo & 0:47 min & 0:25 min & 0:25 min \\ 
+\hline 
+
+\end{tabular}
+\label{tab:temps}  
+\end{table}
+\end{frame}
+
+\begin{frame}
+\frametitle{\bf Resultat avec MSE }
+\begin{figure}[H]
+\includegraphics[scale=0.36]{guybrushmse.jpg}
+\end{figure}
+\end{frame}
+\begin{frame}
+\frametitle{\bf Resultat avec Mean Color}
+\begin{figure}[H]
+\includegraphics[scale=0.36]{guybrushmeancolor.jpg}
+\end{figure}
+\end{frame}
+\begin{frame}
+\frametitle{\bf Resultat avec MCMSE}
+\begin{figure}[H]
+\includegraphics[scale=0.36]{guybrushmcmse.jpg}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{\bf La fin}
+Merci pour l'attention!
+\end{frame}
+%\bibliography{risk}
+%\bibliographystyle{chicago}
+\end{document}
