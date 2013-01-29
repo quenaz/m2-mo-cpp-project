@@ -144,64 +144,15 @@ Le programme a besoin de quelques images de m\^eme taille pour construire une mo
 
 \end{frame}
 
-\subsection{R\'ealisation des Images}
-\begin{frame}
-
-\frametitle{\bf Die Momentenmethode}
-{\tcb Ziel:} NIG-Verteilung m\"oglichst nahe an die empirische Verteilung der Marktdaten anlegen\\ \pause
-{\tcb Idee:} Dr\"ucke die Parameter durch die ersten 4 Momente aus und sch\"atze die Momente aus den Marktdaten
-
-\end{frame}
-
-\begin{frame}
-\frametitle{\bf Die Momentenmethode}
-Es gelte $3k>5s^2>0, \quad \rho=3ks^{-2}-4>1$ und $m$, $v$, $s$, $k$ zentrale empirsche Momente:
-\begin{align*}
-\hat{\alpha}&=3\sqrt{\rho v}(\rho-1)|s|^{-1}  &\hat{\beta}=3/(s\sqrt{v}(\rho-1))\quad\\
-\hat{\mu}&=m-3\sqrt{v}/(\rho s)  &\hat{\delta}=3\sqrt{v(\rho-1)}/(|s|\rho)
-\end{align*}
-\end{frame}
-
-
-
-\subsection{D\'ecoupage des Images en Blocs}
-\subsection{Cr\'eation de mosa\"ique}
-\subsection{Ex\'ecution avec des options de ligne des commandes}
-\subsection{Le library\_generator}
-\begin{frame}
-\frametitle{\bf Die Esschertransformation}
-\begin{itemize}
-\item L\'evy-Prozess ist nicht stetig $\Rightarrow$ Markt ist nicht vollst\"andig
-$\Rightarrow$ Es existiert kein eindeutiges risikoneutrales Ma\ss.\\
-
-\item Esschertransformation f\"ur Dichten:
-
-\begin{align*}
-f_t(x,\theta)=&\frac{exp(\theta x)f_t(x)}{\int\limits_{\mathbb{R}}exp(\theta y)f_t(y)dy}=\frac{exp(\theta x)f_t(x)}{M_{X_t}(\theta)}, \quad \theta\in\mathbb{R}
-\end{align*}
-\item Oder analog f\"ur die Momenterzeugenden Funktionen:
-\begin{align*}
-M_{X_t,\theta}(u)=&\frac{M_{X_t}(u+\theta)}{M_{X_t}(u)}
-\end{align*}
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{\bf Die Esschertransformation}
-{\tcb Ziel:} Passendes $\theta$ finden\\ \pause
-{\tcb Idee:} Im risikoneutralen Ma\ss \ $P_\theta$ soll unser diskontierter Preisprozess $\{exp(-rt)S(t)\}_{t\ge0}$ ein Martingal sein; schlie\ss lich soll gelten:
-\begin{align*}
-S(0)=&E_\theta[exp(-rt)S(t)]= \\
-=&exp(-rt)E_\theta[S(0)exp(X_t)]
-\end{align*}
-\end{frame}
-
 \section{Algorithmes}
 
+\subsection{R\'ealisation des algorithmes}
 \begin{frame}
-\begin{center}
-{\Huge Algorithmes}
-\end{center}
+
+\frametitle{\bf Algorithme de cr\'eation de mosa\"ique}
+\begin{centering}
+\includegraphics[width=0.75\textwidth]{the_mosaic_creation_algorithm.png}
+\end{centering}
 \end{frame}
 
 \subsection{L'algorithme de sous\'echantillonnage lin\'eaire}
