@@ -82,33 +82,26 @@
 \begin{frame}
 \frametitle{\bf Des probl\`emes...}
 \begin{figure}[H]
-\includegraphics[scale=0.36]{GitHubIssues.png}
+\includegraphics[scale=0.45]{GitHubIssues.png}
 \end{figure}
 \end{frame}
 
 \begin{frame}
 \frametitle{\bf et des solutions}
 \begin{figure}[H]
-\includegraphics[scale=0.36]{GitHubCommits.png}
+\includegraphics[scale=0.40]{GitHubCommits.png}
 \end{figure}
 \end{frame}
 
 \section{Instruction d'emploi}
-\begin{frame}
-\begin{center}
-{\Huge Instruction d'emploi}
-\end{center}
-\end{frame}
-
-
-\subsection{La biblioth\`eque des carreaux}
+\subsection{Biblioth\`eque des carreaux}
 
 \begin{frame}
 \frametitle{\bf La biblioth\`eque des carreaux}
-Le programme a besoin de quelques images de m\^eme taille pour construire une mosa\"{i}que.
+Le programme principal a besoin de quelques images en format JPEG de m\^eme taille pour construire une mosa\"{i}que.
 \begin{itemize}
-\item {\tcb Location}: Dossier "libraryImages"
-
+\item {\tcb Dossier pour les images d'entr\'ee}: "inputImages"
+\item {\tcb Dossier pour les images de sortie}: "libraryImages"
 \item {\tcb library\_generator}: ex\'ecutable\ avec {-}{-}size ou {-}{-}help
 
 \item {\tcb taille}: {-}{-}size XX
@@ -116,22 +109,22 @@ Le programme a besoin de quelques images de m\^eme taille pour construire une mo
 
 \end{frame}
 
-\subsection{Le programme principal}
+\subsection{Programme principal}
 
 \begin{frame}
 \frametitle{\bf Le programme principal}
-Le programme a besoin de quelques images de m\^eme taille pour construire une mosa\"{i}que.
+Le programme prend un nombre des images de taille quelconque et produit pour chaque image une image mosa\"{i}que de m\^eme taille.
 \begin{itemize}
-\item {\tcb Location}: Dossier "inputImages"
+\item {\tcb Dossier pour les images d'entr\'ee}: "inputImages"
+\item {\tcb Dossier pour les images de sortie}: "outputImages"
 
 \item {\tcb options}: ex\'ecutable\ avec {-}{-}tilesize XX, {-}{-}help, {-}{-}mse, {-}{-}meancolor, {-}{-}mcmse
 
-\item {\tcb Resultats}: Dossier "outputImages"
 \end{itemize}
 
 \end{frame}
 
-\section{Le logiciel et son code source}
+\section{Partie structurelle}
 
 \subsection{Diagramme de classes}
 
@@ -144,9 +137,9 @@ Le programme a besoin de quelques images de m\^eme taille pour construire une mo
 
 \end{frame}
 
-\section{Algorithmes}
+\section{Partie comportementale}
 
-\subsection{R\'ealisation des algorithmes}
+\subsection{Algorithme de cr\'eation de mosa\"ique}
 \begin{frame}
 
 \frametitle{\bf Algorithme de cr\'eation de mosa\"ique}
@@ -155,7 +148,7 @@ Le programme a besoin de quelques images de m\^eme taille pour construire une mo
 \end{centering}
 \end{frame}
 
-\subsection{L'algorithme de sous\'echantillonnage lin\'eaire}
+\subsection{Algorithme de sous\'echantillonnage lin\'eaire}
 \begin{frame}
 \frametitle{\bf Sous\'echantillonnage}
 \begin{figure}[H]
@@ -164,7 +157,7 @@ Le programme a besoin de quelques images de m\^eme taille pour construire une mo
 \end{frame}
 
 
-\subsection{Les mesures de divergence}
+\subsection{Mesures de divergence}
 
 \begin{frame}
 \frametitle{\bf La mesure d'erreur des moindres carr\'es}
